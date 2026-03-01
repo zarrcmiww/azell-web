@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zarr Market</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{background:#000814;color:#fff;overflow-x:hidden;position:relative}
+
+/* BACKGROUND (tetap animasi, tapi tidak ngeblok klik) */
+.nebula{
+  position:fixed; inset:0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(0,255,255,0.3), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(255,0,255,0.3), transparent 40%);
+  filter:blur(80px);
+  animation:nebulaMove 25s infinite alternate;
+  z-index:-3;
+  pointer-events:none; /* penting biar bisa di klik */
+}
+@keyframes nebulaMove{0%{transform:scale(1)}100%{transform:scale(1.2)}}
+
+/* TOP BAR */
+.topbar{
+  position:fixed; top:20px; left:20px; right:20px;
+  display:flex; justify-content:space-between; align-items:center;
+  z-index:999;
+}
+.profile{
+  width:50px;height:50px;border-radius:50%;overflow:hidden;
+  border:2px solid #00f5ff; box-shadow:0 0 20px #00f5ff;
+}
+.profile img{width:100%;height:100%;object-fit:cover}
+.menu-btn{width:40px;cursor:pointer}
+.menu-btn div{height:4px;background:#fff;margin:6px 0;border-radius:5px}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed; right:-250px; top:0;
+  width:250px; height:100%;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(20px);
+  padding:100px 20px;
+  transition:right .35s ease;
+  z-index:998;
+}
+.sidebar.active{right:0}
+.sidebar a{display:block;color:#fff;text-decoration:none;margin-bottom:20px;font-size:18px}
+
+/* LANDING */
+.landing{
+  height:100vh; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; text-align:center;
+}
+.logo{
+  font-size:55px; font-weight:800;
+  background:linear-gradient(90deg,#00f5ff,#ff00ff,#00f5ff);
+  background-size:200%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:textMove 6s linear infinite;
+}
+@keyframes textMove{to{background-position:200%}}
+.start-btn{
+  margin-top:30px; padding:12px 35px; border-radius:30px;
+  border:none; background:#00f5ff; font-weight:800; cursor:pointer;
+  transition:0.2s;
+}
+.start-btn:hover{transform:scale(1.05);box-shadow:0 0 18px #00f5ff}
+
+/* SHOP */
+.shop{display:none;padding:120px 20px 60px}
+.shop.active{display:block}
+.grid{
+  max-width:1200px; margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:25px;
+}
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  padding:25px;
+  transition:0.2s;
+}
+.card:hover{transform:translateY(-6px);box-shadow:0 0 22px #00f5ff}
+.price{color:#00f5ff;margin:10px 0}
+.btn{
+  padding:8px 20px;border-radius:20px;border:none;
+  background:#00f5ff;font-weight:800;cursor:pointer;
+}
+
+/* SOCIAL */
+.socials{
+  display:flex; justify-content:center; gap:18px;
+  margin-top:45px;
+}
+.icon{
+  width:56px;height:56px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(10px);
+  transition:0.2s;
+}
+.icon:hover{transform:translateY(-6px);box-shadow:0 0 18px #00f5ff}
+.icon svg{width:26px;height:26px}
+
+/* HISTORY */
+.history{display:none;padding:120px 20px 60px}
+.history.active{display:block}
+.history .head{
+  max-width:1200px;margin:0 auto 14px;
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;flex-wrap:wrap;
+}
+.history ul{max-width:1200px;margin:auto;list-style:none;padding:0}
+.history li{
+  background:rgba(255,255,255,0.1);
+  margin:10px 0;padding:15px;border-radius:10px;
+  box-shadow:0 0 10px rgba(0,245,255,0.25);
+  display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.small{opacity:.9;font-size:13px}
+.badge{
+  display:inline-block;padding:4px 10px;border-radius:999px;
+  font-size:12px;font-weight:900;
+}
+.badge.paid{background:rgba(37,211,102,0.18);border:1px solid rgba(37,211,102,0.6)}
+.danger{
+  background:#ff3b3b;color:#fff;border:none;
+  padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:900;
+}
+
+/* POPUP */
+.popup{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  justify-content:center; align-items:center;
+  z-index:1000; padding:20px;
+}
+.popup-content{
+  background:#fff;color:#000;
+  padding:20px;border-radius:20px;
+  width:340px;text-align:center;
+  position:relative;
+}
+.popup-content img{
+  width:200px;height:200px;object-fit:cover;
+  border-radius:14px;margin:12px 0;
+}
+.close-btn{
+  position:absolute; top:10px; right:10px;
+  width:36px;height:36px;border:none;border-radius:999px;
+  cursor:pointer;font-weight:900;background:rgba(0,0,0,0.08);
+}
+.popup-actions{display:flex;gap:10px;justify-content:center;margin-top:10px}
+.popup-actions button{
+  border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:900;
+}
+.paid-btn{background:#00f5ff}
+.cancel-btn{background:rgba(0,0,0,0.08)}
+.wa-btn{
+  display:none;width:100%;
+  background:#25D366;color:#fff;border:none;
+  padding:10px;border-radius:12px;margin-top:10px;
+  cursor:pointer;font-weight:900;
+}
+.note{font-size:13px;opacity:.8;margin-top:8px}
+</style>
+</head>
+
+<body>
+<div class="nebula"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="profile">
+    <!-- GANTI PROFIL KE FILE LOKAL -->
+    <img src="zarr.jpg" alt="profile">
+  </div>
+
+  <div class="menu-btn" onclick="toggleMenu()">
+    <div></div><div></div><div></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <a href="#" onclick="showHome(); return false;">Home</a>
+  <a href="#" onclick="enterShop(); return false;">Shop</a>
+  <a href="https://wa.me/6281317205434" target="_blank" rel="noopener">WhatsApp</a>
+  <a href="#" onclick="showHistory(); return false;">History Pembelian</a>
+</div>
+
+<!-- LANDING -->
+<div class="landing" id="landing">
+  <div class="logo">Zarr Market</div>
+  <button class="start-btn" onclick="enterShop()">Get Started</button>
+</div>
+
+<!-- SHOP -->
+<div class="shop" id="shop">
+  <div class="grid">
+
+    <!-- PRODUK 1 -->
+    <div class="card">
+      <h2>Jasa Edit</h2>
+      <p>Preset & Mograph</p>
+      <div class="price">5K - 15K</div>
+      <button class="btn" onclick="openQR('Jasa Edit','5K - 15K')">Order</button>
+    </div>
+
+    <!-- PRODUK 2 -->
+    <div class="card">
+      <h2>Sewa Bot</h2>
+      <p>Azell Assistant</p>
+      <div class="price">10K/Bulan</div>
+      <button class="btn" onclick="openQR('Sewa Bot','10K/Bulan')">Order</button>
+    </div>
+
+    <!-- PRODUK 3 -->
+    <div class="card">
+      <h2>Joki Edit Video</h2>
+      <p>Reels / TikTok / YouTube Short</p>
+      <div class="price">15K - 50K</div>
+      <button class="btn" onclick="openQR('Joki Edit Video','15K - 50K')">Order</button>
+    </div>
+
+    <!-- PRODUK 4 -->
+    <div class="card">
+      <h2>Desain Poster</h2>
+      <p>Flyer / Banner / IG Post</p>
+      <div class="price">10K - 30K</div>
+      <button class="btn" onclick="openQR('Desain Poster','10K - 30K')">Order</button>
+    </div>
+
+    <!-- PRODUK 5 -->
+    <div class="card">
+      <h2>Install & Setup Bot</h2>
+      <p>Setup + fitur dasar</p>
+      <div class="price">25K (Sekali)</div>
+      <button class="btn" onclick="openQR('Install & Setup Bot','25K (Sekali)')">Order</button>
+    </div>
+
+    <!-- PRODUK 6 -->
+    <div class="card">
+      <h2>Premium Script</h2>
+      <p>Script private / custom</p>
+      <div class="price">20K - 100K</div>
+      <button class="btn" onclick="openQR('Premium Script','20K - 100K')">Order</button>
+    </div>
+
+  </div>
+
+  <!-- SOCIALS -->
+  <div class="socials">
+    <a class="icon" href="https://wa.me/6281317205434" target="_blank" rel="noopener" aria-label="WhatsApp">
+      <svg viewBox="0 0 32 32" fill="none">
+        <path fill="currentColor" d="M19.11 17.2c-.3-.15-1.78-.88-2.05-.98-.28-.1-.48-.15-.68.15-.2.3-.78.98-.95 1.18-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.68-1.63-.93-2.23-.24-.58-.48-.5-.68-.51h-.58c-.2 0-.52.07-.8.37-.27.3-1.05 1.02-1.05 2.5 0 1.48 1.08 2.9 1.23 3.1.15.2 2.13 3.26 5.16 4.57.72.31 1.28.5 1.72.64.72.23 1.38.2 1.9.12.58-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.13-.27-.2-.57-.35Z"/>
+        <path fill="currentColor" d="M16 2.67A13.33 13.33 0 0 0 4.6 23.75L3.33 28.67l5.05-1.2A13.33 13.33 0 1 0 16 2.67Zm0 24A10.62 10.62 0 0 1 10.6 25.2l-.38-.23-3 .71.8-2.9-.25-.4A10.67 10.67 0 1 1 16 26.67Z"/>
+      </svg>
+    </a>
+
+    <a class="icon" href="#" onclick="showHistory(); return false;" aria-label="History">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M3 3v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M3.5 8A9 9 0 1 1 6 19.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M12 7v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </a>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="history" id="history">
+  <div class="head">
+    <h2>Riwayat Pembelian</h2>
+    <button class="danger" onclick="clearHistory()">Hapus Riwayat</button>
+  </div>
+  <ul id="historyList"></ul>
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <div class="popup-content" role="dialog" aria-modal="true">
+    <button class="close-btn" onclick="closePopup()" aria-label="Tutup">✕</button>
+
+    <h3>QRIS</h3>
+    <img id="qrisImage" src="qris.jpg" alt="QRIS">
+
+    <p>Order ID : <b id="orderId"></b></p>
+    <p class="small">Produk: <b id="prodName"></b></p>
+    <p class="small">Harga: <b id="prodPrice"></b></p>
+
+    <div class="popup-actions">
+      <button class="paid-btn" onclick="paid()">Sudah Bayar</button>
+      <button class="cancel-btn" onclick="closePopup()">Nanti</button>
+    </div>
+
+    <div id="paymentInfo" style="display:none;margin-top:10px;">
+      <p>✔ Kirim bukti ke admin</p>
+      <a id="waLink" target="_blank" rel="noopener">
+        <button class="wa-btn">📩 Kirim Bukti</button>
+      </a>
+      <p class="note">Pastikan bukti transfer sudah benar ya.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const adminWa = "6281317205434";
+
+/* ✅ QRIS pakai file lokal: taruh qris.jpg satu folder dengan index.html
+   Kalau kamu taruh di folder assets/, jadiin: "assets/qris.jpg"
+*/
+const qrisImageUrl = "qris.jpg";
+
+const storageKey = "purchaseHistory";
+
+let orderCode = "";
+let currentProduct = "";
+let currentPrice = "";
+let isPaidSaved = false;
+
+function enterShop(){
+  document.getElementById("landing").style.display = "none";
+  document.getElementById("shop").classList.add("active");
+  document.getElementById("history").classList.remove("active");
+  closeMenu();
+}
+
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+}
+
+function closeMenu(){
+  document.getElementById("sidebar").classList.remove("active");
+}
+
+function generateOrderID(){
+  return "ORD-" + Math.floor(Math.random()*90000 + 10000);
+}
+
+function openQR(product, price){
+  orderCode = generateOrderID();
+  currentProduct = product;
+  currentPrice = price;
+  isPaidSaved = false;
+
+  document.getElementById("orderId").innerText = orderCode;
+  document.getElementById("prodName").innerText = currentProduct;
+  document.getElementById("prodPrice").innerText = currentPrice;
+
+  // ✅ load gambar QRIS dari file lokal
+  document.getElementById("qrisImage").src = qrisImageUrl;
+
+  document.getElementById("paymentInfo").style.display = "none";
+  document.querySelector(".wa-btn").style.display = "none";
+
+  document.getElementById("popup").style.display = "flex";
+}
+
+function paid(){
+  document.getElementById("paymentInfo").style.display = "block";
+
+  const message =
+    "🔥 Bukti Transfer\n\n" +
+    "Order ID : " + orderCode + "\n" +
+    "Produk : " + currentProduct + "\n" +
+    "Harga : " + currentPrice + "\n" +
+    "Status : PAID";
+
+  const waUrl = "https://wa.me/" + adminWa + "?text=" + encodeURIComponent(message);
+  document.getElementById("waLink").href = waUrl;
+  document.querySelector(".wa-btn").style.display = "block";
+
+  // simpan history hanya setelah bayar (1x)
+  if(!isPaidSaved){
+    savePurchase({
+      orderID: orderCode,
+      product: currentProduct,
+      price: currentPrice,
+      status: "PAID",
+      time: new Date().toISOString()
+    });
+    isPaidSaved = true;
+  }
+}
+
+function closePopup(){
+  document.getElementById("popup").style.display = "none";
+  document.getElementById("paymentInfo").style.display = "none";
+  document.querySelector(".wa-btn").style.display = "none";
+}
+
+// klik background gelap untuk tutup
+document.getElementById("popup").addEventListener("click", (e)=>{
+  if(e.target.id === "popup") closePopup();
+});
+
+function showHome(){
+  document.getElementById("landing").style.display = "flex";
+  document.getElementById("shop").classList.remove("active");
+  document.getElementById("history").classList.remove("active");
+  closeMenu();
+}
+
+function showHistory(){
+  document.getElementById("landing").style.display = "none";
+  document.getElementById("shop").classList.remove("active");
+  document.getElementById("history").classList.add("active");
+  closeMenu();
+  displayHistory();
+}
+
+function getHistory(){
+  return JSON.parse(localStorage.getItem(storageKey)) || [];
+}
+
+function savePurchase(purchaseObj){
+  const h = getHistory();
+  h.unshift(purchaseObj);
+  localStorage.setItem(storageKey, JSON.stringify(h));
+}
+
+function clearHistory(){
+  if(confirm("Yakin mau hapus semua riwayat?")){
+    localStorage.removeItem(storageKey);
+    displayHistory();
+  }
+}
+
+function formatTime(iso){
+  try{
+    return new Date(iso).toLocaleString("id-ID", { dateStyle:"medium", timeStyle:"short" });
+  }catch(e){
+    return iso;
+  }
+}
+
+function displayHistory(){
+  const h = getHistory();
+  const list = document.getElementById("historyList");
+  list.innerHTML = "";
+
+  if(h.length === 0){
+    const li = document.createElement("li");
+    li.innerHTML = `<div>Belum ada pembelian.</div>`;
+    list.appendChild(li);
+    return;
+  }
+
+  h.forEach(p=>{
+    const li = document.createElement("li");
+
+    const left = document.createElement("div");
+    left.innerHTML = `
+      <div><b>Order ID:</b> ${p.orderID}</div>
+      <div class="small"><b>Produk:</b> ${p.product}</div>
+      <div class="small"><b>Harga:</b> ${p.price}</div>
+      <div class="small"><b>Waktu:</b> ${formatTime(p.time)}</div>
+    `;
+
+    const right = document.createElement("div");
+    right.innerHTML = `<span class="badge paid">${p.status}</span>`;
+
+    li.appendChild(left);
+    li.appendChild(right);
+    list.appendChild(li);
+  });
+}
+
+showHome();
+</script>
+</body>
+</html>
