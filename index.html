@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zarr Market</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{background:#000814;color:#fff;overflow-x:hidden;position:relative}
+
+/* BACKGROUND */
+.nebula{
+  position:fixed; inset:0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(0,255,255,0.3), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(255,0,255,0.3), transparent 40%);
+  filter:blur(80px);
+  animation:nebulaMove 25s infinite alternate;
+  z-index:-3;
+  pointer-events:none;
+}
+@keyframes nebulaMove{0%{transform:scale(1)}100%{transform:scale(1.2)}}
+
+/* TOPBAR */
+.topbar{
+  position:fixed; top:20px; left:20px; right:20px;
+  display:flex; justify-content:space-between; align-items:center;
+  z-index:999;
+}
+.profile{
+  width:50px;height:50px;border-radius:50%;overflow:hidden;
+  border:2px solid #00f5ff; box-shadow:0 0 20px #00f5ff;
+}
+.profile img{width:100%;height:100%;object-fit:cover}
+
+/* HAMBURGER */
+.menu-btn{width:40px;cursor:pointer}
+.menu-btn div{height:4px;background:#fff;margin:6px 0;border-radius:5px}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed; right:-250px; top:0;
+  width:250px; height:100%;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(20px);
+  padding:100px 20px;
+  transition:right 0.35s ease;
+  z-index:998;
+}
+.sidebar.active{right:0}
+.sidebar a{display:block;color:#fff;text-decoration:none;margin-bottom:20px;font-size:18px}
+
+/* LANDING */
+.landing{
+  height:100vh; display:flex; flex-direction:column;
+  justify-content:center; align-items:center; text-align:center;
+}
+.logo{
+  font-size:55px;font-weight:800;
+  background:linear-gradient(90deg,#00f5ff,#ff00ff,#00f5ff);
+  background-size:200%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:textMove 6s linear infinite;
+}
+@keyframes textMove{to{background-position:200%}}
+.start-btn{
+  margin-top:30px;padding:12px 35px;border-radius:30px;border:none;
+  background:#00f5ff;font-weight:800;cursor:pointer;transition:0.2s;
+}
+.start-btn:hover{transform:scale(1.05);box-shadow:0 0 18px #00f5ff}
+
+/* SHOP */
+.shop{display:none;padding:120px 20px 40px}
+.shop.active{display:block}
+.grid{
+  max-width:1200px;margin:auto;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:25px;
+}
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  padding:25px;
+  transition:0.2s;
+}
+.card:hover{transform:translateY(-6px);box-shadow:0 0 22px #00f5ff}
+.price{color:#00f5ff;margin:10px 0}
+.btn{
+  padding:8px 20px;border-radius:20px;border:none;
+  background:#00f5ff;font-weight:800;cursor:pointer;
+}
+
+/* PAYMENT SECTION */
+.payment{
+  display:none;
+  padding:20px 20px 80px;
+}
+.payment.active{display:block}
+.pay-wrap{
+  max-width:900px;
+  margin:20px auto 0;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 0 22px rgba(0,245,255,0.2);
+}
+.pay-title{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:6px;
+}
+.pay-sub{opacity:.9;font-size:13px;margin-bottom:14px}
+.qris-box{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  align-items:flex-start;
+}
+.qris-img{
+  width:220px;
+  height:220px;
+  object-fit:cover;
+  border-radius:14px;
+  border:2px solid rgba(0,245,255,0.5);
+  box-shadow:0 0 18px rgba(0,245,255,0.35);
+  background:rgba(0,0,0,0.15);
+}
+.pay-info{
+  flex:1;
+  min-width:220px;
+}
+.kv{margin:8px 0}
+.kv b{color:#00f5ff}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.pay-btn{
+  border:none;border-radius:12px;padding:10px 14px;cursor:pointer;font-weight:900;
+}
+.done-btn{background:#00f5ff}
+.wa-btn{background:#25D366;color:#fff}
+.secondary-btn{background:rgba(255,255,255,0.12);color:#fff;border:1px solid rgba(255,255,255,0.15)}
+.note{opacity:.85;font-size:13px;margin-top:10px}
+
+/* HISTORY */
+.history{display:none;padding:120px 20px 60px}
+.history.active{display:block}
+.history ul{max-width:1200px;margin:auto;list-style:none;padding:0}
+.history li{
+  background:rgba(255,255,255,0.1);
+  margin:10px 0;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,245,255,0.25);
+}
+</style>
+</head>
+
+<body>
+<div class="nebula"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="profile">
+    <img src="zarr.jpg" alt="Zarr Profile">
+  </div>
+
+  <div class="menu-btn" onclick="toggleMenu()">
+    <div></div><div></div><div></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <a href="#" onclick="showHome(); return false;">Home</a>
+  <a href="#" onclick="enterShop(); return false;">Shop</a>
+  <a href="https://wa.me/6281317205434" target="_blank" rel="noopener">WhatsApp</a>
+  <a href="#" onclick="showHistory(); return false;">History Pembelian</a>
+</div>
+
+<!-- LANDING -->
+<div class="landing" id="landing">
+  <div class="logo">Zarr Market</div>
+  <button class="start-btn" onclick="enterShop()">Get Started</button>
+</div>
+
+<!-- SHOP -->
+<div class="shop" id="shop">
+  <div class="grid">
+
+    <div class="card">
+      <h2>Jasa Edit</h2>
+      <p>Jasa Edit Mograph / Pasang Preset Alight Motion</p>
+      <div class="price">5K - 15K</div>
+      <button class="btn" onclick="orderNow('Jasa Edit','5K - 15K')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Sewa Bot</h2>
+      <p>Sewa Bot WhatsApp Azell Assistant</p>
+      <div class="price">10K/Bulan</div>
+      <button class="btn" onclick="orderNow('Sewa Bot','10K/Bulan')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Sewa Bot Permanen</h2>
+      <p>Sewa Bot WhatsApp Azell Assistant Permanen (Include Premium 6 Bulan)</p>
+      <div class="price">70K</div>
+      <button class="btn" onclick="orderNow('Sewa Bot Permanen','70K')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Tutorial Buat Bot Wa</h2>
+      <p>Tutor + Script + Server Sebulan</p>
+      <div class="price">45K</div>
+      <button class="btn" onclick="orderNow('Tutorial Buat Bot Wa','45K')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Am Prem</h2>
+      <p>Alight Motion Premium 1 Tahun</p>
+      <div class="price">2K</div>
+      <button class="btn" onclick="orderNow('Am Prem','2K')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Tutor Am Prem</h2>
+      <p>Tutor Alight Motion Premium Jadi Gratis</p>
+      <div class="price">12K</div>
+      <button class="btn" onclick="orderNow('Tutor Am Prem','12K')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Upgrade User Premium</h2>
+      <p>Upgrade Ke User Premium Di Azell Assistant</p>
+      <div class="price">5K/Bulan</div>
+      <button class="btn" onclick="orderNow('Upgrade User Premium','5K/Bulan')">Order</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- PAYMENT (SCROLL TARGET) -->
+<div class="payment" id="payment">
+  <div class="pay-wrap">
+    <div class="pay-title">Pembayaran QRIS</div>
+    <div class="pay-sub">Scan QRIS di bawah, lalu klik “Kirim Bukti” ke WhatsApp.</div>
+
+    <div class="qris-box">
+      <!-- ✅ QRIS kelihatan karena ada ukuran + style -->
+      <img id="qrisImage" class="qris-img" src="qris.jpg" alt="QRIS">
+
+      <div class="pay-info">
+        <div class="kv">Order ID: <b id="orderId">-</b></div>
+        <div class="kv">Produk: <b id="prodName">-</b></div>
+        <div class="kv">Harga: <b id="prodPrice">-</b></div>
+
+        <div class="actions">
+          <button class="pay-btn done-btn" onclick="markPaid()">Sudah Bayar</button>
+
+          <a id="waLink" target="_blank" rel="noopener">
+            <button class="pay-btn wa-btn">📩 Kirim Bukti</button>
+          </a>
+
+          <button class="pay-btn secondary-btn" onclick="backToShop()">Kembali ke Shop</button>
+        </div>
+
+        <div class="note">*Riwayat akan tersimpan setelah kamu klik “Sudah Bayar”.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="history" id="history">
+  <h2 style="max-width:1200px;margin:0 auto 10px;">Riwayat Pembelian</h2>
+  <ul id="historyList"></ul>
+</div>
+
+<script>
+const adminWa = "6281317205434";
+const qrisImageUrl = "qris.jpg"; // taruh qris.jpg sefolder index.html
+const storageKey = "purchaseHistory";
+
+let orderCode = "";
+let currentProduct = "";
+let currentPrice = "";
+let isSaved = false;
+
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+}
+function closeMenu(){
+  document.getElementById("sidebar").classList.remove("active");
+}
+
+function enterShop(){
+  document.getElementById("landing").style.display="none";
+  document.getElementById("shop").classList.add("active");
+  document.getElementById("history").classList.remove("active");
+
+  // payment disembunyiin saat masuk shop
+  document.getElementById("payment").classList.remove("active");
+  closeMenu();
+}
+
+function showHome(){
+  document.getElementById("landing").style.display="flex";
+  document.getElementById("shop").classList.remove("active");
+  document.getElementById("history").classList.remove("active");
+  document.getElementById("payment").classList.remove("active");
+  closeMenu();
+}
+
+function showHistory(){
+  document.getElementById("landing").style.display="none";
+  document.getElementById("shop").classList.remove("active");
+  document.getElementById("payment").classList.remove("active");
+  document.getElementById("history").classList.add("active");
+  closeMenu();
+  displayHistory();
+}
+
+function backToShop(){
+  document.getElementById("payment").classList.remove("active");
+  document.getElementById("shop").classList.add("active");
+  // scroll balik ke atas shop biar enak
+  document.getElementById("shop").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function generateOrderID(){
+  return "ORD-" + Math.floor(Math.random()*90000 + 10000);
+}
+
+/* ✅ ini dipanggil saat klik Order */
+function orderNow(product, price){
+  orderCode = generateOrderID();
+  currentProduct = product;
+  currentPrice = price;
+  isSaved = false;
+
+  // isi data payment
+  document.getElementById("orderId").innerText = orderCode;
+  document.getElementById("prodName").innerText = currentProduct;
+  document.getElementById("prodPrice").innerText = currentPrice;
+  document.getElementById("qrisImage").src = qrisImageUrl;
+
+  // set link WA dari awal (biar user bisa langsung klik setelah scan)
+  updateWaLink("MENUNGGU KONFIRMASI");
+
+  // tampilkan payment & scroll ke bawah
+  document.getElementById("payment").classList.add("active");
+  document.getElementById("payment").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+/* buat update link WA */
+function updateWaLink(statusText){
+  const message =
+    "🔥 Bukti Transfer\n\n" +
+    "Order ID : " + orderCode + "\n" +
+    "Produk : " + currentProduct + "\n" +
+    "Harga : " + currentPrice + "\n" +
+    "Status : " + statusText;
+
+  const waUrl = "https://wa.me/" + adminWa + "?text=" + encodeURIComponent(message);
+  document.getElementById("waLink").href = waUrl;
+}
+
+/* ✅ simpan history pas user klik “Sudah Bayar” */
+function markPaid(){
+  updateWaLink("PAID");
+
+  if(!isSaved){
+    savePurchase({
+      orderID: orderCode,
+      product: currentProduct,
+      price: currentPrice,
+      status: "PAID",
+      time: new Date().toISOString()
+    });
+    isSaved = true;
+    alert("Status tersimpan. Sekarang kirim bukti ke WhatsApp ya.");
+  }
+}
+
+/* history */
+function getHistory(){
+  return JSON.parse(localStorage.getItem(storageKey)) || [];
+}
+function savePurchase(obj){
+  const h = getHistory();
+  h.unshift(obj);
+  localStorage.setItem(storageKey, JSON.stringify(h));
+}
+function formatTime(iso){
+  try{
+    return new Date(iso).toLocaleString("id-ID", { dateStyle:"medium", timeStyle:"short" });
+  }catch(e){
+    return iso;
+  }
+}
+function displayHistory(){
+  const h = getHistory();
+  const list = document.getElementById("historyList");
+  list.innerHTML = "";
+
+  if(h.length === 0){
+    const li = document.createElement("li");
+    li.innerHTML = "Belum ada pembelian.";
+    list.appendChild(li);
+    return;
+  }
+
+  h.forEach(p=>{
+    const li = document.createElement("li");
+    li.innerHTML =
+      `<b>Order ID:</b> ${p.orderID}<br>`+
+      `<b>Produk:</b> ${p.product}<br>`+
+      `<b>Harga:</b> ${p.price}<br>`+
+      `<b>Status:</b> ${p.status || "-"}<br>`+
+      `<b>Waktu:</b> ${p.time ? formatTime(p.time) : "-"}`;
+    list.appendChild(li);
+  });
+}
+
+// default
+showHome();
+</script>
+
+</body>
+</html>
