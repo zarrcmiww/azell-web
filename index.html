@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zarr Market</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{
+  background:#000814;
+  color:#fff;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* BACKGROUND */
+.nebula{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:
+  radial-gradient(circle at 20% 30%, rgba(0,255,255,0.3), transparent 40%),
+  radial-gradient(circle at 80% 70%, rgba(255,0,255,0.3), transparent 40%);
+  filter:blur(80px);
+  animation:nebulaMove 25s infinite alternate;
+  z-index:-3;
+  pointer-events:none;
+}
+@keyframes nebulaMove{
+  0%{transform:scale(1)}
+  100%{transform:scale(1.2)}
+}
+
+/* TOPBAR */
+.topbar{
+  position:fixed;
+  top:20px;
+  left:20px;
+  right:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  z-index:999;
+}
+
+/* PROFILE */
+.profile{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  overflow:hidden;
+  border:2px solid #00f5ff;
+  box-shadow:0 0 20px #00f5ff;
+}
+.profile img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* HAMBURGER */
+.menu-btn{
+  width:40px;
+  cursor:pointer;
+}
+.menu-btn div{
+  height:4px;
+  background:#fff;
+  margin:6px 0;
+  border-radius:5px;
+}
+
+/* SIDEBAR */
+.sidebar{
+  position:fixed;
+  right:-250px;
+  top:0;
+  width:250px;
+  height:100%;
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(20px);
+  padding:100px 20px;
+  transition:right 0.5s ease-out;
+  z-index:998;
+}
+.sidebar.active{right:0}
+.sidebar a{
+  display:block;
+  color:white;
+  text-decoration:none;
+  margin-bottom:20px;
+  font-size:18px;
+}
+
+/* LANDING */
+.landing{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+}
+.logo{
+  font-size:55px;
+  font-weight:800;
+  background:linear-gradient(90deg,#00f5ff,#ff00ff,#00f5ff);
+  background-size:200%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:textMove 6s linear infinite;
+}
+@keyframes textMove{to{background-position:200%}}
+.start-btn{
+  margin-top:30px;
+  padding:12px 35px;
+  border-radius:30px;
+  border:none;
+  background:#00f5ff;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+}
+.start-btn:hover{
+  transform:scale(1.1);
+  box-shadow:0 0 20px #00f5ff;
+}
+
+/* SHOP */
+.shop{
+  display:none;
+  padding:120px 20px 60px;
+}
+.shop.active{display:block}
+.grid{
+  max-width:1200px;
+  margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:25px;
+}
+.card{
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  padding:25px;
+  transition:0.3s;
+}
+.card:hover{
+  transform:translateY(-10px);
+  box-shadow:0 0 25px #00f5ff;
+}
+.price{
+  color:#00f5ff;
+  margin:10px 0;
+}
+.btn{
+  padding:8px 20px;
+  border-radius:20px;
+  border:none;
+  background:#00f5ff;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* HISTORY */
+.history{
+  display:none;
+  padding:120px 20px 60px;
+}
+.history.active{display:block}
+.history ul{
+  max-width:1200px;
+  margin:auto;
+  list-style:none;
+  padding:0;
+}
+.history li{
+  background:rgba(255,255,255,0.1);
+  margin:10px 0;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,245,255,0.3);
+}
+
+/* POPUP */
+.popup{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+}
+.popup-content{
+  background:white;
+  color:black;
+  padding:20px;
+  border-radius:20px;
+  width:320px;
+  text-align:center;
+}
+.wa-btn{
+  display:none;
+  background:#25D366;
+  color:white;
+  border:none;
+  padding:10px;
+  border-radius:10px;
+  margin-top:10px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+<div class="nebula"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="profile">
+    <img src="zarr.jpg" alt="Zarr Profile">
+  </div>
+
+  <div class="menu-btn" onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <a href="#" onclick="showHome(); return false;">Home</a>
+  <a href="#" onclick="enterShop(); return false;">Shop</a>
+  <a href="https://wa.me/6281317205434" target="_blank">WhatsApp</a>
+  <a href="#" onclick="showHistory(); return false;">History Pembelian</a>
+</div>
+
+<!-- LANDING -->
+<div class="landing" id="landing">
+  <div class="logo">Zarr Market</div>
+  <button class="start-btn" onclick="enterShop()">Get Started</button>
+</div>
+
+<!-- SHOP -->
+<div class="shop" id="shop">
+  <div class="grid">
+
+    <div class="card">
+      <h2>Jasa Edit</h2>
+      <p>Jasa Edit Mograph / Pasang Preset Alight Motion</p>
+      <div class="price">5K - 15K</div>
+      <button class="btn" onclick="openQR('Jasa Edit','5K - 15K')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Sewa Bot</h2>
+      <p>Sewa Bot WhatsApp Azell Assistant</p>
+      <div class="price">10K/Bulan</div>
+      <button class="btn" onclick="openQR('Sewa Bot','10K/Bulan')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Sewa Bot Permanen</h2>
+      <p>Sewa Bot WhatsApp Azell Assistant Permanen (Include Premium 6 Bulan)</p>
+      <div class="price">70K</div>
+      <button class="btn" onclick="openQR('Sewa Bot Permanen','70K')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Tutorial Buat Bot Wa</h2>
+      <p>Tutor + Script + Server Sebulan</p>
+      <div class="price">45K</div>
+      <button class="btn" onclick="openQR('Tutorial Buat Bot Wa','45K')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Am Prem</h2>
+      <p>Alight Motion Premium 1 Tahun</p>
+      <div class="price">2K</div>
+      <button class="btn" onclick="openQR('Am Prem','2K')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Tutor Am Prem</h2>
+      <p>Tutor Alight Motion Premium Jadi Gratis</p>
+      <div class="price">12K</div>
+      <button class="btn" onclick="openQR('Tutor Am Prem','12K')">Order</button>
+    </div>
+
+    <div class="card">
+      <h2>Upgrade User Premium</h2>
+      <p>Upgrade Ke User Premium Di Azell Assistant</p>
+      <div class="price">5K/Bulan</div>
+      <button class="btn" onclick="openQR('Upgrade User Premium','5K/Bulan')">Order</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="history" id="history">
+  <h2>Riwayat Pembelian</h2>
+  <ul id="historyList"></ul>
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <h3>QRIS</h3>
+    <img src="https://via.placeholder.com/200?text=QRIS">
+    <p>Order ID : <b id="orderId"></b></p>
+    <button onclick="paid()">Sudah Bayar</button>
+
+    <div id="paymentInfo" style="display:none;margin-top:10px;">
+      <p>✔ Kirim bukti ke admin</p>
+      <a id="waLink" target="_blank">
+        <button class="wa-btn">📩 Kirim Bukti</button>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+let orderCode="";
+let currentProduct="";
+let currentPrice="";
+
+function enterShop(){
+  document.getElementById("landing").style.display="none";
+  document.getElementById("shop").classList.add("active");
+  document.getElementById("history").classList.remove("active");
+}
+function toggleMenu(){
+  document.getElementById("sidebar").classList.toggle("active");
+}
+function generateOrderID(){
+  return "ORD-"+Math.floor(Math.random()*90000+10000);
+}
+function openQR(product,price){
+  orderCode=generateOrderID();
+  currentProduct=product;
+  currentPrice=price;
+
+  document.getElementById("orderId").innerText=orderCode;
+  document.getElementById("popup").style.display="flex";
+
+  savePurchase(orderCode, currentProduct, currentPrice);
+}
+function paid(){
+  document.getElementById("paymentInfo").style.display="block";
+
+  let message=
+  "🔥 Bukti Transfer\n\n"+
+  "Order ID : "+orderCode+"\n"+
+  "Produk : "+currentProduct+"\n"+
+  "Harga : "+currentPrice;
+
+  let waUrl=
+  "https://wa.me/6281317205434?text="+encodeURIComponent(message);
+
+  document.getElementById("waLink").href=waUrl;
+  document.querySelector(".wa-btn").style.display="block";
+}
+function showHome(){
+  document.getElementById("shop").classList.remove("active");
+  document.getElementById("history").classList.remove("active");
+}
+function showHistory(){
+  document.getElementById("shop").classList.remove("active");
+  document.getElementById("history").classList.add("active");
+  displayHistory();
+}
+function savePurchase(orderID, product, price){
+  let purchaseHistory = JSON.parse(localStorage.getItem('purchaseHistory')) || [];
+  purchaseHistory.push({orderID, product, price});
+  localStorage.setItem('purchaseHistory', JSON.stringify(purchaseHistory));
+}
+function displayHistory(){
+  let purchaseHistory = JSON.parse(localStorage.getItem('purchaseHistory')) || [];
+  let historyList = document.getElementById('historyList');
+  historyList.innerHTML = '';
+  purchaseHistory.forEach(function(purchase){
+    let li = document.createElement('li');
+    li.innerHTML = `Order ID: ${purchase.orderID} | Produk: ${purchase.product} | Harga: ${purchase.price}`;
+    historyList.appendChild(li);
+  });
+}
+</script>
+
+</body>
+</html>
