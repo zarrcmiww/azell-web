@@ -1,0 +1,2425 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Zarr Marketplace ◈ ADMIN PANEL</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* ═══════════════════════════════════════════════════
+   Zarr Marketplace ADMIN PANEL — FULL FEATURED v4
+   Cyan/Purple Theme · Firebase Realtime Database
+   ═══════════════════════════════════════════════════ */
+:root{
+  --accent:#00eaff;--purple:#ae00ff;--gold:#ffcc00;--red:#ff0055;--green:#00ff88;--blue:#4488ff;
+  --bg:#020406;--bg2:#06090e;--bg3:#08101a;--bg4:#0b1520;
+  --glass:rgba(255,255,255,0.03);--glass2:rgba(255,255,255,0.06);
+  --border:rgba(255,255,255,0.07);--borderA:rgba(0,234,255,0.22);--borderB:rgba(0,234,255,0.45);
+  --text:#e8f4ff;--text2:rgba(255,255,255,0.6);--muted:rgba(255,255,255,0.35);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{font-size:14px;}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;min-height:100vh;cursor:crosshair;}
+::selection{background:rgba(0,234,255,0.2);color:var(--accent);}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:rgba(255,255,255,0.02);}
+::-webkit-scrollbar-thumb{background:rgba(0,234,255,0.2);border-radius:10px;}
+
+/* BG */
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,234,255,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,234,255,0.022) 1px,transparent 1px);
+  background-size:44px 44px;animation:gridScroll 14s linear infinite;}
+@keyframes gridScroll{from{background-position:0 0}to{background-position:44px 44px}}
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 45% at 50% -5%,rgba(0,234,255,0.06) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 30% at 90% 90%,rgba(174,0,255,0.05) 0%,transparent 65%);}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,234,255,0.008) 2px,rgba(0,234,255,0.008) 4px);}
+
+/* ── LOCK SCREEN ──────────────────── */
+#ls{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;}
+.lk{position:relative;z-index:2;width:400px;padding:48px;text-align:center;
+  background:linear-gradient(135deg,rgba(0,234,255,0.05),rgba(6,9,14,0.95));
+  border:1px solid var(--borderA);border-radius:4px;
+  box-shadow:0 0 80px rgba(0,234,255,0.1),0 0 160px rgba(174,0,255,0.05),inset 0 0 40px rgba(0,234,255,0.02);}
+.lk::before,.lk::after{content:'';position:absolute;width:18px;height:18px;}
+.lk::before{top:-1px;left:-1px;border-top:2px solid var(--accent);border-left:2px solid var(--accent);}
+.lk::after{bottom:-1px;right:-1px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent);}
+.lk-icon{width:60px;height:60px;margin:0 auto 20px;border-radius:16px;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  box-shadow:0 0 30px rgba(0,234,255,0.5);animation:lkPulse 3s ease-in-out infinite;}
+@keyframes lkPulse{0%,100%{box-shadow:0 0 30px rgba(0,234,255,0.5)}50%{box-shadow:0 0 50px rgba(0,234,255,0.8),0 0 80px rgba(174,0,255,0.3)}}
+.lk-title{font-family:'Orbitron';font-size:18px;font-weight:900;letter-spacing:5px;
+  background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.lk-sub{font-family:'Share Tech Mono';font-size:9px;color:var(--muted);letter-spacing:3px;margin-bottom:32px;}
+.lk-iw{position:relative;margin-bottom:12px;}
+.lk-in{width:100%;padding:13px 44px 13px 18px;background:rgba(0,234,255,0.04);
+  border:1px solid var(--border);border-radius:4px;color:var(--accent);
+  font-family:'Share Tech Mono';font-size:22px;letter-spacing:10px;text-align:center;outline:none;transition:.25s;}
+.lk-in:focus{border-color:var(--borderB);box-shadow:0 0 24px rgba(0,234,255,0.15);}
+.lk-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);cursor:pointer;font-size:14px;transition:.2s;}
+.lk-eye:hover{color:var(--accent);}
+.lk-btn{width:100%;margin-top:4px;padding:13px;border:none;border-radius:4px;
+  background:linear-gradient(90deg,var(--accent),var(--purple));
+  color:#000;font-family:'Orbitron';font-size:11px;font-weight:900;letter-spacing:3px;cursor:pointer;transition:.2s;}
+.lk-btn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,234,255,0.35);}
+.lk-err{color:var(--red);font-size:10px;margin-top:10px;min-height:16px;font-family:'Share Tech Mono';letter-spacing:1px;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.lk-shake{animation:shake .4s ease;}
+
+/* ── APP ──────────────────────────── */
+#app{display:none;flex-direction:column;min-height:100vh;position:relative;z-index:2;}
+#app.show{display:flex;}
+
+/* ── TOP BAR ──────────────────────── */
+#topbar{height:58px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 18px 0 0;background:rgba(2,4,6,0.95);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:300;backdrop-filter:blur(24px);flex-shrink:0;}
+#topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--purple),var(--accent),transparent);opacity:.5;}
+#menu-trigger{width:58px;height:58px;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:5px;cursor:pointer;transition:.2s;border-right:1px solid var(--border);flex-shrink:0;}
+#menu-trigger:hover{background:rgba(0,234,255,0.06);}
+#menu-trigger span{display:block;width:18px;height:1.5px;background:var(--muted);border-radius:1px;transition:.3s;}
+#menu-trigger:hover span{background:var(--accent);}
+#menu-trigger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+#menu-trigger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+#menu-trigger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+#menu-trigger.open span{background:var(--accent);}
+.tb-logo-box{display:flex;flex-direction:column;padding:0 18px;}
+.tb-logo-txt{font-family:'Orbitron';font-size:13px;font-weight:900;letter-spacing:3px;
+  background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.tb-logo-sub{font-family:'Share Tech Mono';font-size:8px;color:var(--muted);letter-spacing:3px;}
+.tb-stats{flex:1;display:flex;align-items:center;gap:6px;padding:0 16px;overflow:hidden;}
+.tbs{display:flex;align-items:center;gap:7px;padding:5px 12px;
+  background:var(--glass);border:1px solid var(--border);border-radius:20px;transition:.2s;}
+.tbs:hover{border-color:var(--borderA);}
+.tbs-v{font-family:'Share Tech Mono';font-size:12px;font-weight:700;}
+.tbs-l{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+.tbs-sep{width:1px;height:18px;background:var(--border);}
+.tb-right{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.cpill{display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid var(--border);
+  border-radius:20px;font-size:9px;font-family:'Share Tech Mono';color:var(--muted);letter-spacing:1px;}
+.cdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.cdot.on{background:var(--green);box-shadow:0 0 8px var(--green);animation:dotBlink 2s ease-in-out infinite;}
+.cdot.off{background:var(--red);}
+.cdot.cn{background:var(--gold);animation:dotBlink .8s ease-in-out infinite;}
+@keyframes dotBlink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── BUTTONS ──────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:4px;
+  cursor:pointer;font-size:11px;font-weight:700;border:1px solid;transition:all .2s;
+  white-space:nowrap;font-family:'Rajdhani';letter-spacing:.8px;text-transform:uppercase;}
+.btn:hover{transform:translateY(-1px);}
+.btn:active{transform:translateY(0);}
+.bp{background:rgba(0,234,255,0.1);border-color:rgba(0,234,255,0.4);color:var(--accent);}
+.bp:hover{background:rgba(0,234,255,0.18);box-shadow:0 0 20px rgba(0,234,255,0.2);}
+.bp2{background:transparent;border-color:var(--border);color:var(--text2);}
+.bp2:hover{border-color:var(--borderA);color:var(--text);background:rgba(0,234,255,0.05);}
+.bd{background:rgba(255,0,85,0.09);border-color:rgba(255,0,85,0.35);color:var(--red);}
+.bd:hover{background:rgba(255,0,85,0.18);box-shadow:0 0 14px rgba(255,0,85,0.2);}
+.bw{background:rgba(255,204,0,0.08);border-color:rgba(255,204,0,0.35);color:var(--gold);}
+.bw:hover{background:rgba(255,204,0,0.16);}
+.bpu{background:rgba(174,0,255,0.1);border-color:rgba(174,0,255,0.35);color:var(--purple);}
+.bpu:hover{background:rgba(174,0,255,0.2);}
+.bprimary{background:linear-gradient(90deg,var(--accent),var(--purple));border:none;color:#000;font-weight:900;}
+.bprimary:hover{box-shadow:0 4px 20px rgba(0,234,255,0.4);}
+.bsm{padding:5px 11px;font-size:10px;}
+.bxs{padding:4px 9px;font-size:10px;}
+
+/* ── DRAWER ───────────────────────── */
+#drawer{position:fixed;top:0;left:0;width:264px;height:100vh;
+  background:rgba(2,4,6,0.99);border-right:1px solid var(--border);z-index:500;
+  transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;backdrop-filter:blur(24px);overflow-y:auto;}
+#drawer.open{transform:translateX(0);box-shadow:0 0 80px rgba(0,234,255,0.1);}
+#dov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:499;display:none;backdrop-filter:blur(3px);}
+#dov.show{display:block;}
+.dr-hdr{padding:18px 18px 14px;border-bottom:1px solid var(--border);}
+.dr-brand{font-family:'Orbitron';font-size:12px;letter-spacing:4px;
+  background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.dr-ver{font-family:'Share Tech Mono';font-size:8px;color:var(--muted);letter-spacing:2px;margin-top:3px;}
+.dr-sect{padding:12px 16px 3px;font-family:'Share Tech Mono';font-size:8px;letter-spacing:3px;
+  color:var(--muted);text-transform:uppercase;border-top:1px solid rgba(0,234,255,0.05);margin-top:4px;}
+.dr-sect:first-of-type{border-top:none;margin-top:0;}
+.ni{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:12px;font-weight:600;
+  color:var(--text2);cursor:pointer;transition:.15s;border-left:2px solid transparent;
+  letter-spacing:.5px;text-transform:uppercase;}
+.ni:hover{color:var(--text);background:rgba(0,234,255,0.05);border-left-color:rgba(0,234,255,0.3);}
+.ni.active{color:var(--accent);background:rgba(0,234,255,0.07);border-left-color:var(--accent);}
+.ni .nix{width:16px;text-align:center;font-size:12px;flex-shrink:0;color:var(--muted);}
+.ni.active .nix{color:var(--accent);}
+.nbg{margin-left:auto;font-size:9px;font-family:'Share Tech Mono';padding:2px 7px;
+  border-radius:20px;background:rgba(0,234,255,0.1);border:1px solid rgba(0,234,255,0.2);color:var(--accent);}
+.nbg.r{background:rgba(255,0,85,0.1);border-color:rgba(255,0,85,0.25);color:var(--red);}
+.dr-footer{margin-top:auto;padding:14px 16px;border-top:1px solid var(--border);}
+.dr-user{display:flex;align-items:center;gap:10px;padding:10px;
+  background:var(--glass);border:1px solid var(--border);border-radius:4px;margin-bottom:10px;}
+.dr-avatar{width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),var(--purple));
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.dr-uname{font-size:12px;font-weight:700;
+  background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.dr-urole{font-family:'Share Tech Mono';font-size:8px;color:var(--muted);}
+
+/* ── MAIN ─────────────────────────── */
+#main{flex:1;overflow-y:auto;padding:22px 24px;background:var(--bg);}
+.page{display:none;flex-direction:column;gap:18px;}
+.page.active{display:flex;animation:pgIn .3s ease;}
+@keyframes pgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── PAGE HEADER ──────────────────── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2px;}
+.ph-title{font-family:'Orbitron';font-size:14px;font-weight:900;letter-spacing:4px;
+  background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:flex;align-items:center;gap:8px;}
+.ph-title::before{content:'◈';font-size:11px;background:linear-gradient(90deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.ph-sub{font-family:'Share Tech Mono';font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:4px;padding-left:20px;}
+.ph-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
+/* ── STAT GRID ────────────────────── */
+.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+.sc{background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:16px;
+  position:relative;overflow:hidden;transition:all .25s;cursor:default;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.3;}
+.sc:hover{border-color:var(--borderA);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+.sc-label{font-family:'Share Tech Mono';font-size:8px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;}
+.sc-val{font-family:'Orbitron';font-size:24px;font-weight:900;line-height:1;}
+.sc-sub{font-family:'Share Tech Mono';font-size:8px;margin-top:7px;color:var(--muted);}
+.cv-a{color:var(--accent);text-shadow:0 0 16px rgba(0,234,255,0.5);}
+.cv-p{color:var(--purple);text-shadow:0 0 16px rgba(174,0,255,0.4);}
+.cv-g{color:var(--gold);text-shadow:0 0 16px rgba(255,204,0,0.4);}
+.cv-b{color:var(--blue);text-shadow:0 0 16px rgba(68,136,255,0.4);}
+.cv-r{color:var(--red);text-shadow:0 0 16px rgba(255,0,85,0.4);}
+.cv-gr{color:var(--green);text-shadow:0 0 16px rgba(0,255,136,0.4);}
+
+/* ── CARD ─────────────────────────── */
+.card{background:var(--glass);border:1px solid var(--border);border-radius:14px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;width:2px;height:100%;
+  background:linear-gradient(180deg,var(--accent),transparent 70%);opacity:.4;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
+  border-bottom:1px solid var(--border);background:rgba(0,234,255,0.015);}
+.ct{font-family:'Orbitron';font-size:10px;letter-spacing:2.5px;
+  background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:flex;align-items:center;gap:8px;}
+.ct i{background:none;-webkit-text-fill-color:var(--muted);}
+.cb{padding:16px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+
+/* ── TABLE ────────────────────────── */
+.tw{overflow-x:auto;}
+.tbl{width:100%;border-collapse:collapse;}
+.tbl th{padding:9px 12px;text-align:left;font-family:'Share Tech Mono';font-size:8px;
+  letter-spacing:2px;color:var(--muted);border-bottom:1px solid var(--border);
+  background:rgba(0,234,255,0.02);text-transform:uppercase;white-space:nowrap;}
+.tbl td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle;font-size:12px;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:rgba(0,234,255,0.03);}
+.ccell{font-family:'Share Tech Mono';color:var(--gold);}
+
+/* ── BADGE ────────────────────────── */
+.bge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;
+  font-family:'Share Tech Mono';font-size:8px;letter-spacing:1px;font-weight:700;}
+.ba{background:rgba(0,234,255,0.1);border:1px solid rgba(0,234,255,0.25);color:var(--accent);}
+.bm{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:var(--text2);}
+.bgr{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.25);color:var(--green);}
+.br{background:rgba(255,0,85,0.1);border:1px solid rgba(255,0,85,0.25);color:var(--red);}
+.bgo{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.25);color:var(--gold);}
+.bpu2{background:rgba(174,0,255,0.1);border:1px solid rgba(174,0,255,0.25);color:var(--purple);}
+.gcS{background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.35);color:#ef4444;}
+.gcA{background:rgba(174,0,255,0.15);border-color:rgba(174,0,255,0.35);color:var(--purple);}
+.gcB{background:rgba(0,234,255,0.12);border-color:rgba(0,234,255,0.3);color:var(--accent);}
+.gcC{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.15);color:var(--text2);}
+
+/* ── FORM ─────────────────────────── */
+.fg{margin-bottom:12px;}
+.fl{font-family:'Share Tech Mono';font-size:9px;letter-spacing:1.5px;color:var(--muted);margin-bottom:5px;text-transform:uppercase;}
+.fc{width:100%;padding:10px 13px;background:rgba(0,234,255,0.03);
+  border:1px solid var(--border);border-radius:8px;color:#fff;
+  font-family:'Rajdhani';font-size:13px;outline:none;transition:.2s;}
+.fc:focus{border-color:var(--borderA);box-shadow:0 0 14px rgba(0,234,255,0.08);}
+.fc::placeholder{color:var(--muted);}
+textarea.fc{resize:vertical;min-height:80px;}
+select.fc option{background:var(--bg3);}
+.fr{display:grid;gap:12px;margin-bottom:0;}
+.fr.c2{grid-template-columns:1fr 1fr;}
+.fr.c3{grid-template-columns:1fr 1fr 1fr;}
+.dv{height:1px;margin:14px 0;background:linear-gradient(90deg,transparent,var(--borderA),transparent);}
+
+/* ── INFO BOX ─────────────────────── */
+.ib{background:rgba(0,234,255,0.04);border:1px solid rgba(0,234,255,0.15);
+  border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text2);}
+.ib.warn{background:rgba(255,204,0,0.04);border-color:rgba(255,204,0,0.2);color:var(--gold);}
+
+/* ── TOGGLE SWITCH ────────────────── */
+.tgl{display:inline-flex;align-items:center;cursor:pointer;position:relative;width:38px;height:20px;flex-shrink:0;}
+.tgl input{opacity:0;width:0;height:0;position:absolute;}
+.tt{position:absolute;inset:0;border-radius:20px;background:rgba(255,255,255,0.1);
+  border:1px solid var(--border);transition:.3s;}
+.tgl input:checked~.tt{background:rgba(0,234,255,0.2);border-color:var(--accent);}
+.tb2{position:absolute;width:14px;height:14px;border-radius:50%;background:var(--muted);
+  top:3px;left:3px;transition:.3s;box-shadow:0 1px 4px rgba(0,0,0,0.4);}
+.tgl input:checked~.tt~.tb2{left:21px;background:var(--accent);box-shadow:0 0 8px rgba(0,234,255,0.6);}
+
+/* ── PROGRESS BAR ─────────────────── */
+.prog{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}
+.pf{height:100%;border-radius:4px;transition:.3s;}
+
+/* ── EMPTY STATE ──────────────────── */
+.es{text-align:center;padding:40px;color:var(--muted);font-family:'Share Tech Mono';font-size:10px;letter-spacing:1px;}
+.es i{font-size:28px;display:block;margin-bottom:10px;opacity:.3;}
+
+/* ── SEARCH BAR ───────────────────── */
+.sw{display:flex;align-items:center;gap:8px;background:var(--glass);
+  border:1px solid var(--border);border-radius:20px;padding:6px 14px;}
+.sw i{color:var(--muted);font-size:11px;}
+.si{background:transparent;border:none;outline:none;color:var(--text);
+  font-family:'Rajdhani';font-size:12px;width:100%;}
+
+/* ── SUBSCRIPTION CHIP ────────────── */
+.sc2{display:inline-flex;padding:2px 8px;border-radius:20px;font-size:9px;
+  background:rgba(0,234,255,0.08);border:1px solid rgba(0,234,255,0.2);color:var(--accent);
+  font-family:'Share Tech Mono';margin-right:4px;}
+
+/* ── REDEEM ITEM ──────────────────── */
+.ri{background:rgba(0,234,255,0.03);border:1px solid var(--border);
+  border-radius:12px;padding:14px;margin-bottom:10px;transition:.2s;}
+.ri:hover{border-color:var(--borderA);}
+
+/* ── BANNER ITEM ──────────────────── */
+.bni{display:flex;align-items:center;gap:12px;padding:10px;
+  background:var(--glass);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;transition:.2s;}
+.bni:hover{border-color:var(--borderA);}
+.bni-thumb{width:80px;height:44px;border-radius:7px;object-fit:cover;
+  border:1px solid var(--border);background:rgba(0,234,255,0.05);flex-shrink:0;}
+
+/* ── CAT ITEM ─────────────────────── */
+.catitem{display:flex;align-items:center;gap:12px;padding:12px;
+  background:var(--glass);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;transition:.2s;}
+.catitem:hover{border-color:var(--borderA);}
+
+/* ── TOAST ────────────────────────── */
+#tc{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:9000;
+  display:flex;flex-direction:column;gap:6px;align-items:center;width:92%;max-width:360px;pointer-events:none;}
+.toast{background:rgba(6,9,14,0.97);border-radius:12px;padding:10px 16px;
+  display:flex;align-items:center;gap:10px;width:100%;
+  box-shadow:0 8px 30px rgba(0,0,0,0.6);opacity:0;transform:translateY(-10px);
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);border:1px solid rgba(0,234,255,0.15);}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.success{border-color:rgba(0,255,136,0.25);}
+.toast.error{border-color:rgba(255,0,85,0.25);}
+.toast.info{border-color:rgba(0,234,255,0.2);}
+
+/* ── CONFIRM ──────────────────────── */
+.co{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.88);
+  display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.co.open{display:flex;}
+.cbox{background:var(--bg3);border:1px solid var(--borderA);border-radius:16px;
+  padding:32px;width:90%;max-width:400px;text-align:center;}
+.cico{font-size:40px;margin-bottom:12px;}
+.cttl{font-family:'Orbitron';font-size:14px;color:var(--accent);letter-spacing:2px;margin-bottom:10px;}
+.cmsg{font-size:13px;color:var(--text2);margin-bottom:24px;line-height:1.6;}
+.cbtns{display:flex;gap:10px;justify-content:center;}
+
+/* ── MODAL ────────────────────────── */
+.mo{position:fixed;inset:0;z-index:7000;background:rgba(0,0,0,.88);
+  display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.mo.open{display:flex;}
+.modal{background:var(--bg3);border:1px solid var(--borderA);border-radius:16px;
+  width:92%;max-height:90vh;overflow-y:auto;}
+.mmd{max-width:500px;}
+.msm{max-width:420px;}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+.mt{font-family:'Orbitron';font-size:11px;letter-spacing:2.5px;
+  background:linear-gradient(90deg,#fff,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.mbody{padding:20px;}
+.mf{display:flex;gap:8px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--border);}
+
+@media(max-width:900px){.sg{grid-template-columns:repeat(3,1fr)}.tb-stats{display:none}}
+@media(max-width:600px){.sg{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}.fr.c2,.fr.c3{grid-template-columns:1fr}}
+
+/* ── PRODUCT REORDER ──────────────── */
+.prod-drag{cursor:grab;user-select:none;}
+.prod-drag:active{cursor:grabbing;}
+.prod-row-moving{opacity:.5;background:rgba(0,234,255,0.06)!important;}
+.prod-row-over{border-top:2px solid var(--accent)!important;}
+
+/* ── REALTIME COIN BADGE ──────────── */
+.coin-live{display:inline-flex;align-items:center;gap:4px;font-family:'Share Tech Mono';font-size:11px;color:var(--gold);}
+.coin-live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:dotBlink 1.5s infinite;flex-shrink:0;}
+.rt-updated{animation:rtPing .6s ease-out;}
+@keyframes rtPing{0%{background:rgba(0,255,136,0.15)}100%{background:transparent}}
+
+/* ── CATEGORY INLINE MANAGER ──────── */
+.cat-mgr{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center;}
+.cat-mgr-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;
+  border:1px solid var(--border);border-radius:20px;font-family:'Share Tech Mono';
+  font-size:9px;letter-spacing:1px;cursor:pointer;transition:.2s;color:var(--text2);}
+.cat-mgr-chip:hover{border-color:var(--borderA);}
+.cat-mgr-chip.active{border-color:var(--accent);color:var(--accent);background:rgba(0,234,255,0.07);}
+.cat-mgr-chip .chip-del{color:var(--red);margin-left:4px;font-size:10px;opacity:.6;transition:.2s;}
+.cat-mgr-chip .chip-del:hover{opacity:1;}
+.cat-add-inline{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:14px;
+  padding:10px 14px;background:rgba(0,234,255,0.03);border:1px dashed rgba(0,234,255,0.15);border-radius:10px;}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div id="tc"></div>
+
+<!-- CONFIRM -->
+<div class="co" id="confOvl">
+  <div class="cbox">
+    <div class="cico" id="cico">⚠️</div>
+    <div class="cttl" id="cttl">KONFIRMASI</div>
+    <div class="cmsg" id="cmsg"></div>
+    <div class="cbtns">
+      <button class="btn bp2 bsm" onclick="cancelConf()"><i class="fa fa-ban"></i> Batal</button>
+      <button class="btn bd bsm" id="cok"><i class="fa fa-check"></i> Lanjutkan</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOCK SCREEN -->
+<div id="ls">
+  <div class="lk" id="lbox">
+    <div class="lk-icon">⬡</div>
+    <div class="lk-title">Zarr Marketplace</div>
+    <div class="lk-sub">// ADMIN PANEL ACCESS //</div>
+    <div class="lk-iw">
+      <input class="lk-in" id="lpass" type="password" placeholder="••••••" maxlength="20" autocomplete="off">
+      <span class="lk-eye" onclick="toggleEye()"><i class="fa fa-eye" id="eico"></i></span>
+    </div>
+    <button class="lk-btn" onclick="doLogin()">◈ &nbsp;AUTHENTICATE&nbsp; ◈</button>
+    <div class="lk-err" id="lerr"></div>
+  </div>
+</div>
+
+<!-- MODALS ─────────────────────────────────── -->
+
+<!-- Edit Koin Inline -->
+<div class="mo" id="mEK">
+  <div class="modal msm">
+    <div class="mh"><div class="mt">◈ UBAH KOIN MEMBER</div><button class="btn bp2 bxs" onclick="closeM('mEK')"><i class="fa fa-xmark"></i></button></div>
+    <div class="mbody">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(0,234,255,0.04);border:1px solid var(--borderA);border-radius:10px;margin-bottom:16px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#ff8800);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🪙</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#fff;" id="ek-name">—</div>
+          <div style="font-size:11px;color:var(--gold);font-family:'Share Tech Mono'">Saldo saat ini: <span id="ek-current">0</span> koin</div>
+        </div>
+      </div>
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Operasi</div>
+          <select class="fc" id="ek-op">
+            <option value="set">🎯 Set langsung</option>
+            <option value="add">➕ Tambah</option>
+            <option value="sub">➖ Kurangi</option>
+          </select>
+        </div>
+        <div class="fg"><div class="fl">Jumlah Koin</div><input class="fc" id="ek-amount" type="number" min="0" placeholder="0" oninput="previewCoinResult()"></div>
+      </div>
+      <div class="fg"><div class="fl">Preview Hasil</div>
+        <div class="fc" id="ek-preview" style="background:rgba(255,204,0,0.06);border-color:rgba(255,204,0,0.3);color:var(--gold);font-family:'Share Tech Mono';font-size:14px;text-align:center;padding:12px;">—</div>
+      </div>
+      <div class="fg"><div class="fl">Alasan <span style="color:var(--muted)">(wajib)</span></div><input class="fc" id="ek-reason" placeholder="Contoh: Bonus, Reward, Kompensasi..."></div>
+    </div>
+    <div class="mf">
+      <button class="btn bp2 bsm" onclick="closeM('mEK')">Batal</button>
+      <button class="btn bw bsm" onclick="saveEK()"><i class="fa fa-floppy-disk"></i> Simpan & Publish</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Member -->
+<div class="mo" id="mEM">
+  <div class="modal mmd">
+    <div class="mh"><div class="mt">◈ EDIT MEMBER</div><button class="btn bp2 bxs" onclick="closeM('mEM')"><i class="fa fa-xmark"></i></button></div>
+    <div class="mbody">
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Username</div><input class="fc" id="em-name" disabled style="opacity:.6"></div>
+        <div class="fg"><div class="fl">Role</div><select class="fc" id="em-role"><option value="member">Member</option><option value="admin">Admin</option><option value="developer">Developer</option></select></div>
+      </div>
+      <div class="fr c3">
+        <div class="fg"><div class="fl">Koin 🪙</div><input class="fc" id="em-coins" type="number" min="0"></div>
+        <div class="fg"><div class="fl">Total Spent</div><input class="fc" id="em-spent" type="number" min="0"></div>
+        <div class="fg"><div class="fl">Julukan</div><input class="fc" id="em-julukan" placeholder="Opsional..."></div>
+      </div>
+      <div class="fg"><div class="fl">Catatan Admin</div><textarea class="fc" id="em-note" rows="2" placeholder="Catatan opsional..."></textarea></div>
+    </div>
+    <div class="mf">
+      <button class="btn bp2 bsm" onclick="resetDevM()"><i class="fa fa-mobile-screen"></i> Reset Device</button>
+      <button class="btn bp2 bsm" onclick="closeM('mEM')">Batal</button>
+      <button class="btn bp bsm" onclick="saveEM()"><i class="fa fa-floppy-disk"></i> Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Subscription -->
+<div class="mo" id="mAS">
+  <div class="modal msm">
+    <div class="mh"><div class="mt">◈ TAMBAH SUBSCRIPTION</div><button class="btn bp2 bxs" onclick="closeM('mAS')"><i class="fa fa-xmark"></i></button></div>
+    <div class="mbody">
+      <div class="fg"><div class="fl">Pilih Member</div><select class="fc" id="as-mem"></select></div>
+      <div class="fg"><div class="fl">Tipe / Nama Produk</div><input class="fc" id="as-type" placeholder="Contoh: Bot FF, Script ML..."></div>
+      <div class="fg"><div class="fl">Durasi (hari)</div><input class="fc" id="as-days" type="number" min="1" value="30"></div>
+    </div>
+    <div class="mf"><button class="btn bp2 bsm" onclick="closeM('mAS')">Batal</button><button class="btn bp bsm" onclick="saveNewSub()"><i class="fa fa-calendar-plus"></i> Tambah Subs</button></div>
+  </div>
+</div>
+
+<!-- Add / Edit Product -->
+<div class="mo" id="mAP">
+  <div class="modal mmd">
+    <div class="mh"><div class="mt" id="mAP-title">◈ TAMBAH PRODUK</div><button class="btn bp2 bxs" onclick="closeM('mAP');window._editProdIdx=null"><i class="fa fa-xmark"></i></button></div>
+    <div class="mbody">
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Kategori</div><select class="fc" id="ap-cat"></select></div>
+        <div class="fg"><div class="fl">Nama Produk</div><input class="fc" id="ap-name" placeholder="Nama produk..."></div>
+      </div>
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Harga</div><input class="fc" id="ap-price" placeholder="15K / 15.000"></div>
+        <div class="fg"><div class="fl">URL Gambar (opsional)</div><input class="fc" id="ap-img" placeholder="https://..." oninput="prevApImg()"></div>
+      </div>
+      <div id="ap-imgp" style="display:none;margin-bottom:12px;"><img id="ap-imge" style="max-height:90px;border-radius:8px;border:1px solid var(--borderA);"></div>
+      <div class="fg">
+        <div class="fl">Benefit / Fitur (satu per baris)</div>
+        <textarea class="fc" id="ap-ben" rows="5" placeholder="Bypass Update&#10;24 Jam Online&#10;Support WhatsApp&#10;Anti Ban Terbaru"></textarea>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bp2 bsm" onclick="closeM('mAP');window._editProdIdx=null">Batal</button>
+      <button class="btn bp bsm" onclick="saveNewProd()"><i class="fa fa-floppy-disk"></i> Simpan Produk</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Voucher -->
+<div class="mo" id="mAV">
+  <div class="modal msm">
+    <div class="mh"><div class="mt">◈ BUAT VOUCHER</div><button class="btn bp2 bxs" onclick="closeM('mAV')"><i class="fa fa-xmark"></i></button></div>
+    <div class="mbody">
+      <div class="fg"><div class="fl">Kode Voucher</div><input class="fc" id="av-code" placeholder="DISKON20" style="text-transform:uppercase;letter-spacing:3px;font-family:'Share Tech Mono';font-size:15px;"></div>
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Tipe Diskon</div><select class="fc" id="av-type"><option value="percent">Persen (%)</option><option value="fixed">Fixed (Rp)</option></select></div>
+        <div class="fg"><div class="fl">Nilai</div><input class="fc" id="av-val" type="number" placeholder="10"></div>
+      </div>
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Maks Penggunaan</div><input class="fc" id="av-max" type="number" value="999"></div>
+        <div class="fg"><div class="fl">Berlaku Hingga</div><input class="fc" id="av-exp" type="date"></div>
+      </div>
+      <div class="fg"><div class="fl">Berlaku Untuk</div><select class="fc" id="av-for"><option value="all">Semua Menu</option><option value="premium">Premium</option><option value="sewa">Sewa</option><option value="script">Script</option></select></div>
+    </div>
+    <div class="mf"><button class="btn bp2 bsm" onclick="closeM('mAV')">Batal</button><button class="btn bw bsm" onclick="saveNewVoucher()"><i class="fa fa-ticket"></i> Buat Voucher</button></div>
+  </div>
+</div>
+
+<!-- Add Category -->
+<div class="mo" id="mAC">
+  <div class="modal msm">
+    <div class="mh"><div class="mt">◈ TAMBAH KATEGORI</div><button class="btn bp2 bxs" onclick="closeM('mAC')"><i class="fa fa-xmark"></i></button></div>
+    <div class="mbody">
+      <div class="fr c2">
+        <div class="fg"><div class="fl">ID Unik (lowercase)</div><input class="fc" id="nc-id" placeholder="bundle" style="font-family:'Share Tech Mono'"></div>
+        <div class="fg"><div class="fl">Nama Tampil</div><input class="fc" id="nc-label" placeholder="Bundle Hemat"></div>
+      </div>
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Icon / Emoji</div><input class="fc" id="nc-icon" placeholder="🎁" style="font-size:20px;text-align:center"></div>
+        <div class="fg"><div class="fl">Warna Aksen</div><input class="fc" id="nc-color" type="color" value="#00eaff" style="height:42px;cursor:pointer;padding:4px;"></div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn bp2 bsm" onclick="closeM('mAC')">Batal</button><button class="btn bp bsm" onclick="saveNewCat()"><i class="fa fa-folder-plus"></i> Tambah Kategori</button></div>
+  </div>
+</div>
+
+<!-- Add Gacha Prize -->
+<div class="mo" id="mAG">
+  <div class="modal msm">
+    <div class="mh"><div class="mt" id="mAG-title">◈ TAMBAH HADIAH GACHA</div><button class="btn bp2 bxs" onclick="closeM('mAG');window._editGachaIdx=null"><i class="fa fa-xmark"></i></button></div>
+    <div class="mbody">
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Nama Hadiah</div><input class="fc" id="gp-name" placeholder="Perpanjang Subs 7 Hari"></div>
+        <div class="fg"><div class="fl">Icon Emoji</div><input class="fc" id="gp-icon" placeholder="🎁" style="font-size:20px;text-align:center;" maxlength="4"></div>
+      </div>
+      <div class="fr c3">
+        <div class="fg"><div class="fl">Tipe</div><select class="fc" id="gp-type"><option value="subs">Subs</option><option value="koin">Koin</option><option value="spesial">Spesial</option></select></div>
+        <div class="fg"><div class="fl">Nilai (hari/poin)</div><input class="fc" id="gp-val" type="number" min="1" value="7"></div>
+        <div class="fg"><div class="fl">Bobot</div><input class="fc" id="gp-weight" type="number" min="1" value="5"></div>
+      </div>
+      <div class="fg"><div class="fl">Kelas Kelangkaan</div>
+        <select class="fc" id="gp-class">
+          <option value="C">◌ Class C — Common</option>
+          <option value="B">◎ Class B — Rare</option>
+          <option value="A">◈ Class A — Epic</option>
+          <option value="S">★ Class S — Legendary</option>
+        </select>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bp2 bsm" onclick="closeM('mAG');window._editGachaIdx=null">Batal</button>
+      <button class="btn bpu bsm" id="gp-save-btn" onclick="saveNewGacha()"><i class="fa fa-dice"></i> Tambah Hadiah</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Redeem Item -->
+<div class="mo" id="mARD">
+  <div class="modal msm">
+    <div class="mh"><div class="mt" id="mARD-title">◈ TAMBAH ITEM REDEEM</div><button class="btn bp2 bxs" onclick="closeM('mARD');window._editRdKey=null"><i class="fa fa-xmark"></i></button></div>
+    <div class="mbody">
+      <div class="fr c2">
+        <div class="fg"><div class="fl">ID Unik (huruf kecil)</div><input class="fc" id="rd-id" placeholder="diskon20" style="font-family:'Share Tech Mono'"></div>
+        <div class="fg"><div class="fl">Icon Emoji</div><input class="fc" id="rd-icon" placeholder="💸" style="font-size:20px;text-align:center;"></div>
+      </div>
+      <div class="fg"><div class="fl">Nama Item</div><input class="fc" id="rd-name" placeholder="Diskon 20%"></div>
+      <div class="fg"><div class="fl">Deskripsi</div><input class="fc" id="rd-desc" placeholder="Diskon 20% untuk pembelian berikutnya"></div>
+      <div class="fr c2">
+        <div class="fg"><div class="fl">Biaya Koin 🪙</div><input class="fc" id="rd-cost" type="number" min="0" placeholder="100"></div>
+        <div class="fg"><div class="fl">Status</div>
+          <select class="fc" id="rd-enabled">
+            <option value="true">✅ Aktif</option>
+            <option value="false">❌ Nonaktif</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bp2 bsm" onclick="closeM('mARD');window._editRdKey=null">Batal</button>
+      <button class="btn bp bsm" onclick="saveRdItem()"><i class="fa fa-floppy-disk"></i> Simpan Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div id="dov" onclick="closeDrawer()"></div>
+
+<!-- DRAWER -->
+<div id="drawer">
+  <div class="dr-hdr">
+    <div class="dr-brand">◈ Zarr Marketplace</div>
+    <div class="dr-ver">// ADMIN PANEL v4.0 — FIREBASE REALTIME //</div>
+  </div>
+  <div class="dr-sect">Overview</div>
+  <div class="ni active" data-p="overview"><span class="nix"><i class="fa fa-chart-pie"></i></span>Dashboard</div>
+  <div class="dr-sect">Data Member</div>
+  <div class="ni" data-p="members"><span class="nix"><i class="fa fa-users"></i></span>Members<span class="nbg" id="nb-m">0</span></div>
+  <div class="ni" data-p="coins"><span class="nix"><i class="fa fa-coins"></i></span>Koin Member<span class="nbg" id="nb-coins-total" style="background:rgba(255,204,0,0.15);border-color:rgba(255,204,0,0.3);color:var(--gold)">0</span></div>
+  <div class="ni" data-p="subs"><span class="nix"><i class="fa fa-calendar-check"></i></span>Subscriptions<span class="nbg" id="nb-s">0</span></div>
+  <div class="ni" data-p="lb"><span class="nix"><i class="fa fa-trophy"></i></span>Leaderboard</div>
+  <div class="dr-sect">Konten Store</div>
+  <div class="ni" data-p="products"><span class="nix"><i class="fa fa-box"></i></span>Produk & Harga<span class="nbg" id="nb-p">0</span></div>
+  <div class="ni" data-p="banners"><span class="nix"><i class="fa fa-images"></i></span>Banner Slider</div>
+  <div class="ni" data-p="cats"><span class="nix"><i class="fa fa-th-large"></i></span>Menu Kategori</div>
+  <div class="ni" data-p="media"><span class="nix"><i class="fa fa-photo-film"></i></span>BG Video & Musik</div>
+  <div class="dr-sect">Fitur Store</div>
+  <div class="ni" data-p="vouchers"><span class="nix"><i class="fa fa-ticket"></i></span>Voucher<span class="nbg" id="nb-v">0</span></div>
+  <div class="ni" data-p="gacha"><span class="nix"><i class="fa fa-dice"></i></span>Gacha Prizes<span class="nbg" id="nb-g">0</span></div>
+  <div class="ni" data-p="redeem"><span class="nix"><i class="fa fa-gift"></i></span>Redeem Config</div>
+  <div class="ni" data-p="payment"><span class="nix"><i class="fa fa-credit-card"></i></span>Pembayaran</div>
+  <div class="dr-sect">Aktivitas</div>
+  <div class="ni" data-p="chat"><span class="nix"><i class="fa fa-comments"></i></span>Chat Log<span class="nbg r" id="nb-c">0</span></div>
+  <div class="ni" data-p="logs"><span class="nix"><i class="fa fa-scroll"></i></span>Admin Logs</div>
+  <div class="dr-sect">Pengaturan</div>
+  <div class="ni" data-p="settings"><span class="nix"><i class="fa fa-gear"></i></span>Config Toko</div>
+  <div class="dr-footer">
+    <div class="dr-user">
+      <div class="dr-avatar">⚡</div>
+      <div><div class="dr-uname">ADMIN</div><div class="dr-urole">// SUPER ACCESS //</div></div>
+    </div>
+    <button class="btn bd bsm" style="width:100%;justify-content:center;" onclick="doLogout()">
+      <i class="fa fa-right-from-bracket"></i>&nbsp;LOGOUT
+    </button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div id="menu-trigger" onclick="toggleDrawer()"><span></span><span></span><span></span></div>
+    <div class="tb-logo-box"><div class="tb-logo-txt">Zarr Marketplace</div><div class="tb-logo-sub">ADMIN PANEL</div></div>
+    <div class="tb-stats">
+      <div class="tbs"><span class="tbs-v cv-a" id="hm">—</span><div class="tbs-l">Members</div></div>
+      <div class="tbs-sep"></div>
+      <div class="tbs"><span class="tbs-v cv-gr" id="hs2">—</span><div class="tbs-l">Subs Aktif</div></div>
+      <div class="tbs-sep"></div>
+      <div class="tbs"><span class="tbs-v cv-g" id="hc">—</span><div class="tbs-l">Total Koin</div></div>
+      <div class="tbs-sep"></div>
+      <div class="tbs"><span class="tbs-v cv-b" id="hp">—</span><div class="tbs-l">Produk</div></div>
+    </div>
+    <div class="tb-right">
+      <div class="cpill"><div class="cdot cn" id="cdot"></div><span id="cstat">INIT</span></div>
+      <button class="btn bp2 bsm" onclick="refreshAll()"><i class="fa fa-rotate"></i> Sync</button>
+      <button class="btn bp bsm" onclick="publishAll()"><i class="fa fa-cloud-arrow-up"></i> Publish</button>
+      <button class="btn bxs bp2" onclick="exportJSON()" title="Export JSON"><i class="fa fa-download"></i></button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+  <!-- ◈ OVERVIEW ─────────────────────────── -->
+  <div class="page active" id="page-overview">
+    <div class="ph"><div class="ph-left"><div class="ph-title">DASHBOARD</div><div class="ph-sub">// SYSTEM STATUS & OVERVIEW //</div></div>
+      <div class="ph-actions"><button class="btn bp2 bsm" onclick="refreshAll()"><i class="fa fa-rotate"></i> Refresh</button><button class="btn bp bsm" onclick="publishAll()"><i class="fa fa-cloud-arrow-up"></i> Publish All</button></div>
+    </div>
+    <div class="sg">
+      <div class="sc"><div class="sc-label">TOTAL MEMBERS</div><div class="sc-val cv-a" id="ov-m">0</div><div class="sc-sub">Akun terdaftar</div></div>
+      <div class="sc"><div class="sc-label">ACTIVE SUBS</div><div class="sc-val cv-gr" id="ov-s">0</div><div class="sc-sub">Subscription aktif</div></div>
+      <div class="sc"><div class="sc-label">TOTAL KOIN</div><div class="sc-val cv-g" id="ov-c">0</div><div class="sc-sub">Distribusi semua member</div></div>
+      <div class="sc"><div class="sc-label">TOTAL PRODUK</div><div class="sc-val cv-b" id="ov-p">0</div><div class="sc-sub">Semua kategori</div></div>
+      <div class="sc"><div class="sc-label">VOUCHER AKTIF</div><div class="sc-val cv-r" id="ov-v">0</div><div class="sc-sub">Dapat digunakan</div></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ch"><div class="ct"><i class="fa fa-users"></i>MEMBER TERBARU</div><button class="btn bp2 bxs" onclick="goto('members')">Semua →</button></div><div id="ov-rec"></div></div>
+      <div class="card"><div class="ch"><div class="ct"><i class="fa fa-layer-group"></i>DISTRIBUSI LEVEL</div></div><div class="cb" id="ov-lv"></div></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ch"><div class="ct"><i class="fa fa-clock"></i>SUBS AKAN EXPIRE</div><span class="bge br" id="ov-ecnt">0 subs</span></div><div id="ov-exp"></div></div>
+      <div class="card"><div class="ch"><div class="ct"><i class="fa fa-crown"></i>TOP KOIN</div></div><div id="ov-top"></div></div>
+    </div>
+  </div>
+
+  <!-- ◈ MEMBERS ──────────────────────────── -->
+  <div class="page" id="page-members">
+    <div class="ph"><div class="ph-left"><div class="ph-title">MEMBERS</div><div class="ph-sub">// KELOLA AKUN MEMBER //</div></div>
+      <div class="ph-actions">
+        <div class="sw"><i class="fa fa-search"></i><input type="text" class="si" id="msrch" placeholder="Cari member..." oninput="renderM()" style="width:180px"></div>
+        <button class="btn bp2 bsm" onclick="loadAll()"><i class="fa fa-rotate"></i></button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct"><i class="fa fa-users"></i>DAFTAR MEMBER</div><span class="bge ba" id="nb-m-detail">0 member</span></div>
+      <div class="tw"><table class="tbl">
+        <thead><tr><th>#</th><th>Nama</th><th>Level</th><th><span style="display:flex;align-items:center;gap:5px"><span class="coin-live-dot"></span>Koin (Live)</span></th><th>Subscriptions</th><th>Bergabung</th><th>Role</th><th>Aksi</th></tr></thead>
+        <tbody id="mtb"><tr><td colspan="8"><div class="es"><i class="fa fa-spinner fa-spin"></i>Loading...</div></td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ◈ SUBSCRIPTIONS ────────────────────── -->
+  <div class="page" id="page-subs">
+    <div class="ph"><div class="ph-left"><div class="ph-title">SUBSCRIPTIONS</div><div class="ph-sub">// LANGGANAN AKTIF MEMBER //</div></div>
+      <div class="ph-actions">
+        <button class="btn bp2 bsm" onclick="loadAll()"><i class="fa fa-rotate"></i></button>
+        <button class="btn bp bsm" onclick="openM('mAS')"><i class="fa fa-plus"></i> Tambah Subs</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct"><i class="fa fa-calendar-check"></i>SEMUA SUBSCRIPTION</div><span class="bge ba" id="nb-s-detail">0 subs</span></div>
+      <div class="tw"><table class="tbl">
+        <thead><tr><th>Member</th><th>Produk / Tipe</th><th>Mulai</th><th>Berakhir</th><th>Sisa Hari</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="stb"><tr><td colspan="7"><div class="es"><i class="fa fa-spinner fa-spin"></i>Loading...</div></td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ◈ LEADERBOARD ──────────────────────── -->
+  <div class="page" id="page-lb">
+    <div class="ph"><div class="ph-left"><div class="ph-title">LEADERBOARD</div><div class="ph-sub">// TOP MEMBER BERDASARKAN KOIN //</div></div>
+      <div class="ph-actions"><button class="btn bp2 bsm" onclick="rndLB()"><i class="fa fa-rotate"></i> Refresh</button></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct"><i class="fa fa-trophy"></i>RANKING KOIN</div></div>
+      <div class="tw"><table class="tbl">
+        <thead><tr><th>Rank</th><th>Member</th><th>Level</th><th>Koin</th><th>Total Subs</th><th>Bergabung</th></tr></thead>
+        <tbody id="lbtb"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ◈ PRODUCTS ─────────────────────────── -->
+  <div class="page" id="page-products">
+    <div class="ph"><div class="ph-left"><div class="ph-title">PRODUK & HARGA</div><div class="ph-sub">// KELOLA KATALOG · DRAG URUTAN PRODUK //</div></div>
+      <div class="ph-actions">
+        <button class="btn bp bsm" onclick="openAddProd()"><i class="fa fa-plus"></i> Tambah Produk</button>
+      </div>
+    </div>
+    <!-- CATEGORY MANAGER INLINE -->
+    <div class="card">
+      <div class="ch"><div class="ct"><i class="fa fa-th-large"></i>KATEGORI MENU</div>
+        <button class="btn bp bsm" onclick="toggleCatAddForm()"><i class="fa fa-plus"></i> Tambah Kategori</button>
+      </div>
+      <div class="cb" style="padding-bottom:8px;">
+        <!-- Add cat form (hidden by default) -->
+        <div id="cat-add-form" style="display:none;margin-bottom:14px;">
+          <div class="cat-add-inline">
+            <input class="fc" id="nc-id" placeholder="ID (huruf kecil)" style="width:130px;font-family:'Share Tech Mono'">
+            <input class="fc" id="nc-label" placeholder="Nama tampil" style="width:130px;">
+            <input class="fc" id="nc-icon" placeholder="🎁" style="width:55px;font-size:18px;text-align:center;">
+            <input class="fc" id="nc-color" type="color" value="#00eaff" style="width:44px;height:38px;padding:4px;cursor:pointer;">
+            <button class="btn bp bsm" onclick="saveNewCat()"><i class="fa fa-check"></i> Simpan</button>
+            <button class="btn bp2 bsm" onclick="toggleCatAddForm()"><i class="fa fa-times"></i></button>
+          </div>
+        </div>
+        <!-- Category chips -->
+        <div class="cat-mgr" id="cat-chips-mgr"></div>
+      </div>
+    </div>
+    <!-- PRODUCT TABLE -->
+    <div class="card">
+      <div class="ch">
+        <div class="ct"><i class="fa fa-box"></i>PRODUK — <span id="active-cat-label" style="color:var(--accent)">...</span></div>
+        <span class="bge ba" id="nb-p-detail">0 produk</span>
+      </div>
+      <div class="cb" style="padding:8px 0 0;">
+        <div style="font-family:'Share Tech Mono';font-size:9px;color:var(--muted);padding:0 16px 10px;">
+          <i class="fa fa-info-circle"></i> Gunakan tombol ↑↓ untuk mengubah urutan produk. Urutan tersimpan otomatis ke Firebase.
+        </div>
+      </div>
+      <div class="tw"><table class="tbl">
+        <thead><tr><th>Urut</th><th>#</th><th>Nama Produk</th><th>Harga</th><th>Benefit</th><th>Gambar</th><th>Aksi</th></tr></thead>
+        <tbody id="ptb"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ◈ BANNERS ──────────────────────────── -->
+  <div class="page" id="page-banners">
+    <div class="ph"><div class="ph-left"><div class="ph-title">BANNER SLIDER</div><div class="ph-sub">// GAMBAR SLIDER HALAMAN UTAMA //</div></div></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fa fa-images"></i>DAFTAR BANNER</div></div>
+        <div class="cb">
+          <div class="ib" style="margin-bottom:12px;">💡 Gunakan URL gambar dari GitHub, imgbb, atau catbox.moe. Ukuran ideal: 800×300px.</div>
+          <div id="blist"></div>
+          <div class="dv"></div>
+          <div class="fg">
+            <div class="fl">Tambah Banner — URL Gambar</div>
+            <div style="display:flex;gap:8px;">
+              <input class="fc" id="nb-url" placeholder="https://i.ibb.co/... atau https://raw.githubusercontent.com/...">
+              <button class="btn bp bsm" onclick="addBanner()" style="flex-shrink:0;"><i class="fa fa-plus"></i> Tambah</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fa fa-eye"></i>PREVIEW BANNER</div></div>
+        <div class="cb" id="bprev"><div class="es"><i class="fa fa-image"></i>KLIK IKON PREVIEW<br>PADA BANNER DI KIRI</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ◈ CATEGORIES ───────────────────────── -->
+  <div class="page" id="page-cats">
+    <div class="ph">
+      <div class="ph-left"><div class="ph-title">MENU KATEGORI</div><div class="ph-sub">// KELOLA TAB MENU TOKO //</div></div>
+      <div class="ph-actions">
+        <button class="btn bp2 bsm" onclick="saveMenuOrd()"><i class="fa fa-floppy-disk"></i> Simpan Urutan</button>
+        <button class="btn bp bsm" onclick="openM('mAC')"><i class="fa fa-plus"></i> Tambah Kategori</button>
+      </div>
+    </div>
+    <div class="g2">
+      <!-- KIRI: Daftar kategori -->
+      <div class="card">
+        <div class="ch">
+          <div class="ct"><i class="fa fa-th-large"></i>URUTAN KATEGORI</div>
+          <span class="bge ba"><span id="catcnt">0</span> kategori</span>
+        </div>
+        <div class="cb">
+          <div class="ib" style="margin-bottom:14px;">
+            💡 Gunakan <b>↑↓</b> untuk mengubah urutan. Klik <b>🗑</b> untuk hapus kategori custom. Klik <b>Simpan Urutan</b> setelah selesai.
+          </div>
+          <div id="catlist"></div>
+        </div>
+      </div>
+      <!-- KANAN: Form tambah + Panduan -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <!-- Form Tambah Kategori Cepat -->
+        <div class="card">
+          <div class="ch"><div class="ct"><i class="fa fa-folder-plus"></i>TAMBAH KATEGORI BARU</div></div>
+          <div class="cb">
+            <div class="fg"><div class="fl">ID Unik <span style="color:var(--muted)">(huruf kecil, tanpa spasi)</span></div>
+              <input class="fc" id="nc-id-cats" placeholder="contoh: bundle" style="font-family:'Share Tech Mono'"></div>
+            <div class="fg"><div class="fl">Nama Tampil</div>
+              <input class="fc" id="nc-label-cats" placeholder="contoh: Bundle Hemat"></div>
+            <div class="fr c2">
+              <div class="fg"><div class="fl">Icon / Emoji</div>
+                <input class="fc" id="nc-icon-cats" placeholder="🎁" style="font-size:20px;text-align:center;"></div>
+              <div class="fg"><div class="fl">Warna Aksen</div>
+                <input class="fc" id="nc-color-cats" type="color" value="#00eaff" style="height:42px;cursor:pointer;padding:4px;"></div>
+            </div>
+            <button class="btn bp btn-full" onclick="saveNewCatFromCatsPage()" style="justify-content:center;padding:11px;">
+              <i class="fa fa-folder-plus"></i>&nbsp; TAMBAH KATEGORI
+            </button>
+          </div>
+        </div>
+        <!-- Panduan -->
+        <div class="card">
+          <div class="ch"><div class="ct"><i class="fa fa-circle-info"></i>PANDUAN</div></div>
+          <div class="cb">
+            <div class="ib" style="margin-bottom:10px;">Kategori ditampilkan sebagai tab di halaman toko. Gunakan tombol ↑↓ untuk mengubah urutan, lalu klik <b>Simpan Urutan</b>.</div>
+            <div class="ib warn">⚠ Kategori default (sewa, premium, script, lainnya) tidak bisa dihapus. Setelah perubahan, klik <b>Publish All</b> agar tampil ke user.</div>
+            <div class="dv"></div>
+            <div class="ib" style="margin-top:0">
+              <div style="font-family:'Share Tech Mono';font-size:9px;color:var(--accent);margin-bottom:8px;">STATUS KATEGORI</div>
+              <div id="cat-status-info" style="font-size:12px;color:var(--text2);">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ◈ MEDIA ─────────────────────────────── -->
+  <div class="page" id="page-media">
+    <div class="ph"><div class="ph-left"><div class="ph-title">BG MEDIA & MUSIK</div><div class="ph-sub">// MEDIA LATAR BELAKANG APP //</div></div>
+      <div class="ph-actions"><button class="btn bp bsm" onclick="saveMedia()"><i class="fa fa-floppy-disk"></i> Simpan & Publish</button></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fa fa-video"></i>BACKGROUND MEDIA</div></div>
+        <div class="cb">
+          <div class="ib" style="margin-bottom:12px;">💡 URL video MP4 atau gambar PNG/JPG untuk latar belakang app.</div>
+          <div class="fg"><div class="fl">URL Background (Video / Gambar)</div><input class="fc" id="cfg-vid" placeholder="https://..." oninput="prevVid()"></div>
+          <div id="vidp" style="display:none;margin-top:10px;"><video id="vide" controls muted style="width:100%;border-radius:8px;border:1px solid var(--borderA);max-height:160px;"></video></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fa fa-music"></i>BACKGROUND MUSIK</div></div>
+        <div class="cb">
+          <div class="ib" style="margin-bottom:12px;">💡 URL file audio MP3 untuk musik latar.</div>
+          <div class="fg"><div class="fl">URL Audio MP3</div><input class="fc" id="cfg-mus" placeholder="https://files.catbox.moe/..." oninput="prevMus()"></div>
+          <div id="musp" style="display:none;margin-top:10px;"><audio id="muse" controls style="width:100%;"></audio></div>
+          <div class="dv"></div>
+          <div class="fg"><div class="fl">Nomor WhatsApp Admin</div><input class="fc" id="cfg-wa" placeholder="6283856xxxxxx" style="font-family:'Share Tech Mono'"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ◈ VOUCHERS ─────────────────────────── -->
+  <div class="page" id="page-vouchers">
+    <div class="ph"><div class="ph-left"><div class="ph-title">VOUCHER</div><div class="ph-sub">// KODE DISKON PELANGGAN //</div></div>
+      <div class="ph-actions">
+        <button class="btn bp2 bsm" onclick="loadAll()"><i class="fa fa-rotate"></i> Refresh</button>
+        <button class="btn bw bsm" onclick="openM('mAV')"><i class="fa fa-ticket"></i> Buat Voucher</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct"><i class="fa fa-ticket"></i>DAFTAR VOUCHER</div></div>
+      <div class="tw"><table class="tbl">
+        <thead><tr><th>Kode</th><th>Tipe</th><th>Nilai</th><th>Maks</th><th>Terpakai</th><th>Exp</th><th>Untuk</th><th>Status</th><th>Aksi</th></tr></thead>
+        <tbody id="vtb"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ◈ GACHA ──────────────────────────────── -->
+  <div class="page" id="page-gacha">
+    <div class="ph"><div class="ph-left"><div class="ph-title">GACHA PRIZES</div><div class="ph-sub">// TAMBAH · EDIT · HAPUS · URUTAN HADIAH //</div></div>
+      <div class="ph-actions">
+        <button class="btn bp2 bsm" onclick="loadAll()"><i class="fa fa-rotate"></i></button>
+        <button class="btn bd bsm" onclick="confDelAll('gacha')"><i class="fa fa-trash"></i> Hapus Semua</button>
+        <button class="btn bpu bsm" onclick="openAddGacha()"><i class="fa fa-plus"></i> Tambah Hadiah</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <div class="ct"><i class="fa fa-dice"></i>PRIZE POOL</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="bge ba" id="nb-g-detail">0 hadiah</span>
+          <span class="bge bw" id="nb-g-weight">Total bobot: 0</span>
+        </div>
+      </div>
+      <div class="tw"><table class="tbl">
+        <thead><tr><th>Urut</th><th>#</th><th>Icon</th><th>Nama Hadiah</th><th>Tipe</th><th>Nilai</th><th>Kelas</th><th>Bobot</th><th>%</th><th>Aksi</th></tr></thead>
+        <tbody id="gtb"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ◈ REDEEM ─────────────────────────────── -->
+  <div class="page" id="page-redeem">
+    <div class="ph"><div class="ph-left"><div class="ph-title">PENUKARAN KOIN</div><div class="ph-sub">// TAMBAH · EDIT · HAPUS ITEM REDEEM //</div></div>
+      <div class="ph-actions">
+        <button class="btn bp bsm" onclick="saveRdFb()"><i class="fa fa-cloud-arrow-up"></i> Simpan Semua</button>
+        <button class="btn bp bsm" onclick="openAddRdItem()"><i class="fa fa-plus"></i> Tambah Item</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <div class="ct"><i class="fa fa-gift"></i>DAFTAR ITEM REDEEM</div>
+        <span class="bge ba" id="nb-rd-detail">0 item</span>
+      </div>
+      <div class="cb" id="rdlist"></div>
+    </div>
+  </div>
+
+  <!-- ◈ PAYMENT ────────────────────────────── -->
+  <div class="page" id="page-payment">
+    <div class="ph"><div class="ph-left"><div class="ph-title">PEMBAYARAN</div><div class="ph-sub">// INFORMASI REKENING & METODE //</div></div>
+      <div class="ph-actions"><button class="btn bp bsm" onclick="savePay()"><i class="fa fa-floppy-disk"></i> Simpan & Publish</button></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fa fa-credit-card"></i>INFO REKENING</div></div>
+        <div class="cb">
+          <div class="fg"><div class="fl">Nomor Rekening / HP</div><input class="fc" id="pay-num" placeholder="0823-xxxx-xxxx" style="font-family:'Share Tech Mono';font-size:15px;letter-spacing:1px;"></div>
+          <div class="fg"><div class="fl">Nama Pemilik Rekening</div><input class="fc" id="pay-name" placeholder="Zarr Marketplace"></div>
+          <div class="fg"><div class="fl">URL QR Code Pembayaran</div><input class="fc" id="pay-qr" placeholder="https://..." oninput="prevQR()"></div>
+          <div id="qrwrap" style="display:none;margin-bottom:12px;"><img id="qrimg" style="max-height:100px;border-radius:8px;border:1px solid var(--borderA);"></div>
+          <div class="dv"></div>
+          <div class="fl" style="margin-bottom:14px;">METODE PEMBAYARAN</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;"><label class="tgl"><input type="checkbox" id="pay-dana"><div class="tt"></div><div class="tb2"></div></label><div><div style="font-size:13px;font-weight:700">DANA</div><div style="font-size:11px;color:var(--muted)">Transfer via DANA</div></div></label>
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;"><label class="tgl"><input type="checkbox" id="pay-gopay"><div class="tt"></div><div class="tb2"></div></label><div><div style="font-size:13px;font-weight:700">GoPay</div><div style="font-size:11px;color:var(--muted)">Transfer via GoPay</div></div></label>
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;"><label class="tgl"><input type="checkbox" id="pay-ovo"><div class="tt"></div><div class="tb2"></div></label><div><div style="font-size:13px;font-weight:700">OVO</div><div style="font-size:11px;color:var(--muted)">Transfer via OVO</div></div></label>
+            <label style="display:flex;align-items:center;gap:12px;cursor:pointer;"><label class="tgl"><input type="checkbox" id="pay-seabank"><div class="tt"></div><div class="tb2"></div></label><div><div style="font-size:13px;font-weight:700">SeaBank</div><div style="font-size:11px;color:var(--muted)">Transfer via SeaBank</div></div></label>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fa fa-qrcode"></i>PREVIEW QR CODE</div></div>
+        <div class="cb" style="display:flex;flex-direction:column;align-items:center;gap:16px;padding-top:24px;">
+          <img id="qrbig" style="max-width:180px;border-radius:10px;border:1px solid var(--borderA);box-shadow:0 0 24px rgba(0,234,255,0.1);" onerror="this.style.display='none'">
+          <div class="ib" style="text-align:center;width:100%;padding:14px;line-height:2.5;">
+            <div style="font-family:'Orbitron';font-size:13px;color:var(--accent)" id="payname2">—</div>
+            <div style="font-family:'Share Tech Mono';font-size:14px;color:var(--text);letter-spacing:1px;" id="paynum2">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ◈ CHAT LOG ────────────────────────────── -->
+  <div class="page" id="page-chat">
+    <div class="ph"><div class="ph-left"><div class="ph-title">CHAT LOG</div><div class="ph-sub">// MONITOR PESAN MEMBER //</div></div>
+      <div class="ph-actions">
+        <div class="sw"><i class="fa fa-search"></i><input type="text" class="si" id="csrch" placeholder="Cari pengirim / pesan..." oninput="renderC()" style="width:200px"></div>
+        <button class="btn bp2 bsm" onclick="loadChat()"><i class="fa fa-rotate"></i></button>
+        <button class="btn bd bsm" onclick="confDelAll('chat')"><i class="fa fa-trash"></i> Hapus Semua</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct"><i class="fa fa-comments"></i>STREAM PESAN</div><span class="bge br" id="nb-c-detail">0 pesan</span></div>
+      <div class="tw"><table class="tbl">
+        <thead><tr><th>Pengirim</th><th>Isi Pesan</th><th>Tipe</th><th>Waktu</th><th>Aksi</th></tr></thead>
+        <tbody id="ctb"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ◈ LOGS ───────────────────────────────── -->
+  <div class="page" id="page-logs">
+    <div class="ph"><div class="ph-left"><div class="ph-title">ADMIN LOGS</div><div class="ph-sub">// RIWAYAT PERUBAHAN KOIN //</div></div>
+      <div class="ph-actions"><button class="btn bp2 bsm" onclick="loadLogs()"><i class="fa fa-rotate"></i> Refresh</button></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct"><i class="fa fa-scroll"></i>LOG TRANSAKSI KOIN</div></div>
+      <div class="tw"><table class="tbl">
+        <thead><tr><th>Member</th><th>Koin Lama</th><th>Koin Baru</th><th>Selisih</th><th>Oleh Admin</th><th>Alasan</th><th>Waktu</th></tr></thead>
+        <tbody id="ltb"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ◈ SETTINGS ────────────────────────────── -->
+  <div class="page" id="page-settings">
+    <div class="ph"><div class="ph-left"><div class="ph-title">CONFIG TOKO</div><div class="ph-sub">// PENGATURAN UTAMA TOKO //</div></div>
+      <div class="ph-actions"><button class="btn bp bsm" onclick="saveSett()"><i class="fa fa-floppy-disk"></i> Simpan & Publish</button></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fa fa-store"></i>IDENTITAS TOKO</div></div>
+        <div class="cb">
+          <div class="fg"><div class="fl">Nama Toko</div><input class="fc" id="cfg-nm" placeholder="Zarr Marketplace"></div>
+          <div class="fg"><div class="fl">Nomor WhatsApp Admin</div><input class="fc" id="cfg-wa2" placeholder="6283xxxxxxxx" style="font-family:'Share Tech Mono'"></div>
+          <div class="dv"></div>
+          <div class="fg"><div class="fl">Warna Aksen Tema</div>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <input type="color" class="fc" id="cfg-acp" value="#00eaff" style="height:42px;width:64px;cursor:pointer;padding:5px;flex-shrink:0;" oninput="document.getElementById('cfg-ach').value=this.value">
+              <input class="fc" id="cfg-ach" placeholder="#00eaff" style="font-family:'Share Tech Mono'" oninput="syncAcc()">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="fa fa-database"></i>OPERASI DATABASE</div></div>
+        <div class="cb" style="display:flex;flex-direction:column;gap:10px;">
+          <div class="ib warn" style="margin-bottom:4px;">⚠ Operasi berikut langsung memengaruhi Firebase.</div>
+          <button class="btn bp" onclick="publishAll()" style="justify-content:center;padding:10px;"><i class="fa fa-cloud-arrow-up"></i>&nbsp;Publish Semua Data ke Firebase</button>
+          <button class="btn bp2" onclick="exportJSON()" style="justify-content:center;padding:10px;"><i class="fa fa-download"></i>&nbsp;Export Backup Database (JSON)</button>
+          <button class="btn bp2" onclick="refreshAll()" style="justify-content:center;padding:10px;"><i class="fa fa-rotate"></i>&nbsp;Sync Ulang Data dari Firebase</button>
+          <div class="dv"></div>
+          <button class="btn bd" onclick="confDelAll('chat')" style="justify-content:center;padding:10px;"><i class="fa fa-comments-slash"></i>&nbsp;Hapus Semua Pesan Chat</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ◈ KOIN MEMBER ─────────────────────────── -->
+  <div class="page" id="page-coins">
+    <div class="ph">
+      <div class="ph-left"><div class="ph-title">KOIN MEMBER</div><div class="ph-sub">// KELOLA SALDO KOIN SECARA REAL-TIME //</div></div>
+      <div class="ph-actions">
+        <div class="sw"><i class="fa fa-search"></i><input type="text" class="si" id="coin-srch" placeholder="Cari member..." oninput="rndCoinTable()" style="width:180px"></div>
+        <button class="btn bp2 bsm" onclick="loadAll()"><i class="fa fa-rotate"></i> Refresh</button>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="sg" style="grid-template-columns:repeat(4,1fr)">
+      <div class="sc"><div class="sc-label">TOTAL KOIN BEREDAR</div><div class="sc-val cv-g" id="coin-stat-total">0</div><div class="sc-sub">Seluruh member</div></div>
+      <div class="sc"><div class="sc-label">MEMBER AKTIF KOIN</div><div class="sc-val cv-a" id="coin-stat-active">0</div><div class="sc-sub">Koin > 0</div></div>
+      <div class="sc"><div class="sc-label">RATA-RATA KOIN</div><div class="sc-val cv-p" id="coin-stat-avg">0</div><div class="sc-sub">Per member</div></div>
+      <div class="sc"><div class="sc-label">KOIN TERTINGGI</div><div class="sc-val cv-g" id="coin-stat-max">0</div><div class="sc-sub" id="coin-stat-max-who">—</div></div>
+    </div>
+
+    <div class="g2">
+      <!-- Tabel member + edit koin -->
+      <div class="card" style="grid-column:1/-1">
+        <div class="ch">
+          <div class="ct"><i class="fa fa-coins"></i>SALDO KOIN MEMBER</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:9px;color:var(--muted);font-family:'Share Tech Mono'">🟢 Real-time sync aktif</span>
+            <span class="bge bgr" id="coin-tbl-cnt">0 member</span>
+          </div>
+        </div>
+        <div class="tw"><table class="tbl">
+          <thead><tr><th>#</th><th>Member</th><th>Level</th><th>Koin</th><th>Total Spent</th><th>Subs Aktif</th><th>Ubah Koin</th></tr></thead>
+          <tbody id="coin-tbl"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- Quick Add Koin Panel -->
+    <div class="card">
+      <div class="ch"><div class="ct"><i class="fa fa-plus-minus"></i>TAMBAH / KURANGI KOIN CEPAT</div></div>
+      <div class="cb">
+        <div class="fr c3">
+          <div class="fg"><div class="fl">Pilih Member</div><select class="fc" id="qa-mem"></select></div>
+          <div class="fg"><div class="fl">Operasi</div>
+            <select class="fc" id="qa-op">
+              <option value="add">➕ Tambah</option>
+              <option value="sub">➖ Kurangi</option>
+              <option value="set">🎯 Set Langsung</option>
+            </select>
+          </div>
+          <div class="fg"><div class="fl">Jumlah Koin</div><input class="fc" id="qa-amount" type="number" min="0" placeholder="100"></div>
+        </div>
+        <div class="fg"><div class="fl">Alasan / Keterangan</div><input class="fc" id="qa-reason" placeholder="Contoh: Bonus pembelian, Kompensasi, dll..."></div>
+        <button class="btn bprimary" onclick="applyQuickCoin()" style="justify-content:center;padding:11px;margin-top:4px;">
+          <i class="fa fa-bolt"></i>&nbsp; TERAPKAN PERUBAHAN KOIN
+        </button>
+      </div>
+    </div>
+
+    <!-- Log transaksi koin -->
+    <div class="card">
+      <div class="ch">
+        <div class="ct"><i class="fa fa-clock-rotate-left"></i>LOG TRANSAKSI KOIN</div>
+        <button class="btn bp2 bxs" onclick="loadLogs();goto('logs')"><i class="fa fa-arrow-up-right-from-square"></i> Lihat Semua</button>
+      </div>
+      <div class="tw"><table class="tbl">
+        <thead><tr><th>Member</th><th>Sebelum</th><th>Sesudah</th><th>Selisih</th><th>Keterangan</th><th>Waktu</th></tr></thead>
+        <tbody id="coin-log-tbl"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ════════════════════════════════════════════════════════
+//  FIREBASE CONFIG — DATABASE Zarr Marketplace
+// ════════════════════════════════════════════════════════
+const FB   = 'https://zarr-f3ded-default-rtdb.firebaseio.com';
+const PASS = '085257'; // ← GANTI PASSWORD DI SINI
+
+// ════════════════════════════════════════════════════════
+//  CONSTANTS
+// ════════════════════════════════════════════════════════
+const LVS = [{name:'ROOKIE',emoji:'🥉',min:0,color:'#94a3b8'},{name:'MEMBER',emoji:'🎖️',min:100,color:'#00c8ff'},{name:'VIP',emoji:'💎',min:300,color:'#8b5cf6'},{name:'ELITE',emoji:'🏆',min:700,color:'#f59e0b'},{name:'LEGEND',emoji:'👑',min:1500,color:'#ef4444'}];
+const CD  = {sewa:{icon:'🤖',label:'Sewa Bot',color:'#00eaff'},script:{icon:'📜',label:'Script Bot',color:'#a855f7'},premium:{icon:'👑',label:'Premium User',color:'#ffcc00'},editing:{icon:'🎬',label:'Editing',color:'#ff5ea8'},lainnya:{icon:'📦',label:'Lainnya',color:'#22c55e'}};
+const RDD = {spin:{cost:50,enabled:true,icon:'🎰',name:'Gacha Spin Gratis',desc:'1x spin gacha tanpa cooldown'},diskon:{cost:100,enabled:true,icon:'💸',name:'Diskon 10%',desc:'Diskon 10% pembelian berikutnya'},subs1:{cost:200,enabled:true,icon:'📅',name:'Subs +1 Hari',desc:'Tambah 1 hari subs aktif'},subs3:{cost:500,enabled:true,icon:'📅',name:'Subs +3 Hari',desc:'Tambah 3 hari subs aktif'},subs7:{cost:1000,enabled:true,icon:'👑',name:'Subs +7 Hari',desc:'Tambah 7 hari subs aktif'}};
+
+const DEFAULT_PRICES = {"sewa": [{"n": "Zarrs AI (1 Hari)", "p": "1.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Bot aktif 24 jam nonstop"}, {"icon": "fa-solid fa-check", "text": "Garansi 1x"}, {"icon": "fa-solid fa-check", "text": "Chat / Call bot aman, tidak kena denda"}, {"icon": "fa-solid fa-check", "text": "Update fitur rutin"}]}, {"n": "Zarrs AI (1 Minggu)", "p": "3.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Bot aktif 24 jam nonstop"}, {"icon": "fa-solid fa-check", "text": "Garansi 1x"}, {"icon": "fa-solid fa-check", "text": "Chat / Call bot aman, tidak kena denda"}, {"icon": "fa-solid fa-check", "text": "Update fitur rutin"}]}, {"n": "Zarrs AI (1 Bulan)", "p": "12.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Bot aktif 24 jam nonstop"}, {"icon": "fa-solid fa-check", "text": "Garansi 1x"}, {"icon": "fa-solid fa-check", "text": "Chat / Call bot aman, tidak kena denda"}, {"icon": "fa-solid fa-check", "text": "Update fitur rutin"}]}, {"n": "Zarrs AI (Permanent)", "p": "75.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Bot aktif 24 jam nonstop"}, {"icon": "fa-solid fa-check", "text": "Garansi 1x"}, {"icon": "fa-solid fa-check", "text": "Chat / Call bot aman, tidak kena denda"}, {"icon": "fa-solid fa-check", "text": "Update fitur rutin"}]}, {"n": "Azell Assistant (1 Bulan)", "p": "10.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Bot aktif 24 jam nonstop"}, {"icon": "fa-solid fa-check", "text": "Garansi 1x"}, {"icon": "fa-solid fa-check", "text": "Chat / Call bot aman, tidak kena denda"}, {"icon": "fa-solid fa-check", "text": "Update fitur rutin"}]}, {"n": "Azell Assistant (3 Bulan)", "p": "25.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Bot aktif 24 jam nonstop"}, {"icon": "fa-solid fa-check", "text": "Garansi 1x"}, {"icon": "fa-solid fa-check", "text": "Chat / Call bot aman, tidak kena denda"}, {"icon": "fa-solid fa-check", "text": "Update fitur rutin"}]}, {"n": "Azell Assistant (Permanent)", "p": "70.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Bot aktif 24 jam nonstop"}, {"icon": "fa-solid fa-check", "text": "Garansi 1x"}, {"icon": "fa-solid fa-check", "text": "Chat / Call bot aman, tidak kena denda"}, {"icon": "fa-solid fa-check", "text": "Update fitur rutin"}]}], "script": [{"n": "Azell Assistant", "p": "60.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Masuk grup update"}, {"icon": "fa-solid fa-check", "text": "Bebas req fitur"}, {"icon": "fa-solid fa-check", "text": "Belajar bareng"}]}, {"n": "Zarr AI", "p": "70.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Versi lebih premium"}, {"icon": "fa-solid fa-check", "text": "Masuk grup update"}, {"icon": "fa-solid fa-check", "text": "Bebas req fitur"}, {"icon": "fa-solid fa-check", "text": "Belajar bareng"}]}], "premium": [{"n": "Azell (1 Bulan)", "p": "5.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Unlimited"}, {"icon": "fa-solid fa-check", "text": "Akses semua fitur"}, {"icon": "fa-solid fa-check", "text": "Priority"}, {"icon": "fa-solid fa-check", "text": "VIP Badge"}, {"icon": "fa-solid fa-check", "text": "VIP Support"}]}, {"n": "Azell (Permanent)", "p": "35.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Unlimited"}, {"icon": "fa-solid fa-check", "text": "Akses semua fitur"}, {"icon": "fa-solid fa-check", "text": "Priority"}, {"icon": "fa-solid fa-check", "text": "VIP Badge"}, {"icon": "fa-solid fa-check", "text": "VIP Support"}]}, {"n": "Zarr AI (1 Bulan)", "p": "7.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Unlimited"}, {"icon": "fa-solid fa-check", "text": "Akses semua fitur"}, {"icon": "fa-solid fa-check", "text": "Priority"}, {"icon": "fa-solid fa-check", "text": "VIP Badge"}, {"icon": "fa-solid fa-check", "text": "VIP Support"}]}, {"n": "Zarr AI (Permanent)", "p": "40.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Unlimited"}, {"icon": "fa-solid fa-check", "text": "Akses semua fitur"}, {"icon": "fa-solid fa-check", "text": "Priority"}, {"icon": "fa-solid fa-check", "text": "VIP Badge"}, {"icon": "fa-solid fa-check", "text": "VIP Support"}]}], "editing": [{"n": "JJ Solo", "p": "5.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Kirim preset"}, {"icon": "fa-solid fa-check", "text": "Max 1 orang"}, {"icon": "fa-solid fa-check", "text": "Free HDR"}]}, {"n": "JJ Duo", "p": "7.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Kirim preset"}, {"icon": "fa-solid fa-check", "text": "Max 2 orang"}, {"icon": "fa-solid fa-check", "text": "Free HDR"}]}, {"n": "JJ Collab 1 Grup", "p": "10.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Kirim preset"}, {"icon": "fa-solid fa-check", "text": "Max 10 orang"}, {"icon": "fa-solid fa-check", "text": "Free HDR"}]}, {"n": "Mograph", "p": "12.000 - 20.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Bebas req lagu"}, {"icon": "fa-solid fa-check", "text": "Bebas req konsep"}, {"icon": "fa-solid fa-check", "text": "Harga sesuai kesulitan"}, {"icon": "fa-solid fa-check", "text": "Free HDR"}]}], "lainnya": [{"n": "Alight Motion Premium (1 Tahun)", "p": "2.000 - 6.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "2k: akun dari buyer"}, {"icon": "fa-solid fa-check", "text": "6k: akun dari seller"}]}, {"n": "Tutorial AM Premium", "p": "15.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Bisa bikin premium selamanya"}, {"icon": "fa-solid fa-check", "text": "Bisa dijual lagi"}, {"icon": "fa-solid fa-check", "text": "Akses selamanya"}]}, {"n": "Tutorial Bikin Bot", "p": "75.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Dapet tutor"}, {"icon": "fa-solid fa-check", "text": "Free script"}, {"icon": "fa-solid fa-check", "text": "Free panel 1 bulan"}, {"icon": "fa-solid fa-check", "text": "Bebas tanya"}, {"icon": "fa-solid fa-check", "text": "Prioritas support"}]}, {"n": "Admin Grup Zarr Bot", "p": "45.000", "img": "https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "b": [{"icon": "fa-solid fa-check", "text": "Tutor bikin bot (tanpa script)"}, {"icon": "fa-solid fa-check", "text": "Early access fitur"}, {"icon": "fa-solid fa-check", "text": "Bisa komunikasi langsung"}, {"icon": "fa-solid fa-check", "text": "Belajar dari dasar"}, {"icon": "fa-solid fa-check", "text": "Ikut testing fitur"}, {"icon": "fa-solid fa-check", "text": "Pengalaman eksklusif"}]}]};
+const DEFAULT_BANNERS = ["https://img2.pixhost.to/images/6663/707568365_alip-1774345759354.jpg", "https://img2.pixhost.to/images/6663/707570333_alip-1774345934962.jpg"];
+const DEFAULT_CONFIG = {
+  store_name: 'Zarr Marketplace',
+  tagline: 'Layanan Bot WhatsApp dan Video Editing Berkualitas',
+  bg_video: 'https://img2.pixhost.to/images/6663/707571811_alip-1774346170133.png',
+  bg_music: 'https://raw.githubusercontent.com/RahmadPasker/dat4/main/uploads/alip-clutch-1774346230262.mp3',
+  wa_number: '6281317205434',
+  account_number: '081317205434',
+  account_name: 'Zarr Marketplace',
+  qr_code: 'https://img2.pixhost.to/images/6663/707567460_alip-1774345634522.jpg',
+  methods_dana: true,
+  methods_gopay: true,
+  methods_ovo: true,
+  methods_seabank: true,
+  categoryOrder: ["sewa", "script", "premium", "editing", "lainnya"],
+  categoryMeta: {"sewa": {"icon": "🤖", "label": "Sewa Bot", "color": "#00eaff"}, "script": {"icon": "📜", "label": "Script Bot", "color": "#a855f7"}, "premium": {"icon": "👑", "label": "Premium User", "color": "#ffcc00"}, "editing": {"icon": "🎬", "label": "Editing", "color": "#ff5ea8"}, "lainnya": {"icon": "📦", "label": "Lainnya", "color": "#22c55e"}}
+};
+
+
+// ════════════════════════════════════════════════════════
+//  FIREBASE HELPERS
+// ════════════════════════════════════════════════════════
+async function fbG(p){const r=await fetch(FB+'/'+p+'.json?t='+Date.now());if(!r.ok)throw new Error('GET '+p);return r.json();}
+async function fbS(p,d){const r=await fetch(FB+'/'+p+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('SET '+p);return r.json();}
+async function fbP(p,d){const r=await fetch(FB+'/'+p+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('PATCH '+p);return r.json();}
+async function fbD(p){await fetch(FB+'/'+p+'.json',{method:'DELETE'}).catch(()=>{});}
+
+// ════════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════════
+let _M={},_K={},_V={},_G=[],_LB={},_CH={},_LG={},_RC=JSON.parse(JSON.stringify(RDD));
+let _pc='sewa',_emk=null,_cp='overview';
+
+// ════════════════════════════════════════════════════════
+//  HELPERS
+// ════════════════════════════════════════════════════════
+function lv(c){for(let i=LVS.length-1;i>=0;i--)if((c||0)>=LVS[i].min)return LVS[i];return LVS[0];}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt(n){return Number(n||0).toLocaleString('id-ID');}
+function fmtDate(ts){return ts?new Date(ts).toLocaleString('id-ID'):'—';}
+function gPr(){if(!_K.prices)_K.prices=JSON.parse(JSON.stringify((_K.config&&_K.config.prices)||DEFAULT_PRICES));return _K.prices;}
+function gCO(){return (_K.config&&_K.config.categoryOrder)||DEFAULT_CONFIG.categoryOrder.slice();}
+function gCM(k){return (_K.config&&_K.config.categoryMeta&&_K.config.categoryMeta[k])||CD[k]||DEFAULT_CONFIG.categoryMeta[k]||{icon:'📦',label:k,color:'#aaa'};}
+function gBn(){if(!_K.banners)_K.banners=(_K.config&&_K.config.banners)||DEFAULT_BANNERS.slice();return _K.banners;}
+function sBn(a){if(_K.banners!==undefined)_K.banners=a;else{if(!_K.config)_K.config={};_K.config.banners=a;}}
+function isAct(s){if(!s||!s.expiry)return false;const p=s.expiry.split('/');if(p.length===3){const[d,m,y]=p.map(Number);return new Date(y,m-1,d)>=new Date(new Date().setHours(0,0,0,0));}return new Date(s.expiry)>=new Date();}
+function dl(e){if(!e)return-1;const p=e.split('/');let ex;if(p.length===3){const[d,m,y]=p.map(Number);ex=new Date(y,m-1,d);}else ex=new Date(e);return Math.ceil((ex-new Date(new Date().setHours(0,0,0,0)))/864e5);}
+
+// ════════════════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════════════════
+function toast(msg,type){
+  type=type||'info';
+  const w=document.getElementById('tc');
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  t.innerHTML=`<span style="font-size:16px">${icons[type]||'ℹ️'}</span><span style="font-size:12px">${msg}</span>`;
+  w.appendChild(t);
+  setTimeout(()=>t.classList.add('show'),10);
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),300);},3200);
+}
+
+// ════════════════════════════════════════════════════════
+//  CONFIRM
+// ════════════════════════════════════════════════════════
+let _cb=null;
+function conf2(msg,cb,ttl,ico){
+  _cb=cb;
+  document.getElementById('cmsg').innerHTML=msg;
+  document.getElementById('cttl').textContent=ttl||'KONFIRMASI';
+  document.getElementById('cico').textContent=ico||'⚠️';
+  document.getElementById('confOvl').classList.add('open');
+}
+function cancelConf(){document.getElementById('confOvl').classList.remove('open');_cb=null;}
+document.getElementById('cok').onclick=function(){document.getElementById('confOvl').classList.remove('open');if(_cb){_cb();_cb=null;}};
+
+// ════════════════════════════════════════════════════════
+//  MODAL
+// ════════════════════════════════════════════════════════
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.mo').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');}));
+
+// ════════════════════════════════════════════════════════
+//  DRAWER / NAV
+// ════════════════════════════════════════════════════════
+function toggleDrawer(){
+  const d=document.getElementById('drawer'),o=document.getElementById('dov'),t=document.getElementById('menu-trigger');
+  const op=d.classList.toggle('open');o.classList.toggle('show',op);t.classList.toggle('open',op);
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('dov').classList.remove('show');
+  document.getElementById('menu-trigger').classList.remove('open');
+}
+document.querySelectorAll('.ni[data-p]').forEach(el=>el.addEventListener('click',function(){goto(this.dataset.p,this);closeDrawer();}));
+function goto(p,el){
+  _cp=p;
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(x=>x.classList.remove('active'));
+  const pg=document.getElementById('page-'+p);if(pg)pg.classList.add('active');
+  if(el)el.classList.add('active');else{const n=document.querySelector('[data-p="'+p+'"]');if(n)n.classList.add('active');}
+  document.getElementById('main').scrollTop=0;
+  rndCur();
+}
+function rndCur(){
+  if(_cp==='overview')rndOV();else if(_cp==='members')renderM();else if(_cp==='subs')renderS();
+  else if(_cp==='lb')rndLB();else if(_cp==='products')rndP();else if(_cp==='banners')rndBn();
+  else if(_cp==='cats')rndCats();else if(_cp==='media')rndMedia();else if(_cp==='vouchers')rndV();
+  else if(_cp==='gacha')rndG();else if(_cp==='redeem')rndRd();else if(_cp==='payment')rndPay();
+  else if(_cp==='chat')loadChat();else if(_cp==='logs')loadLogs();else if(_cp==='settings')rndSett();
+  else if(_cp==='coins'){loadLogs();rndCoinPage();}
+}
+
+// ════════════════════════════════════════════════════════
+//  AUTH
+// ════════════════════════════════════════════════════════
+function doLogin(){
+  const p=document.getElementById('lpass').value;
+  if(p===PASS){
+    document.getElementById('ls').style.display='none';
+    document.getElementById('app').classList.add('show');
+    sessionStorage.setItem('ua','1');
+    init();
+  } else {
+    document.getElementById('lerr').textContent='Password salah. Coba lagi.';
+    document.getElementById('lbox').classList.add('lk-shake');
+    setTimeout(()=>document.getElementById('lbox').classList.remove('lk-shake'),400);
+    document.getElementById('lpass').value='';
+  }
+}
+function toggleEye(){const i=document.getElementById('lpass'),e=document.getElementById('eico');i.type=i.type==='password'?'text':'password';e.className=i.type==='password'?'fa fa-eye':'fa fa-eye-slash';}
+function doLogout(){sessionStorage.removeItem('ua');document.getElementById('ls').style.display='flex';document.getElementById('app').classList.remove('show');}
+document.getElementById('lpass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ════════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════════
+function setConn(s){
+  const d=document.getElementById('cdot'),l=document.getElementById('cstat');
+  d.className='cdot '+(s==='on'?'on':s==='off'?'off':'cn');
+  l.textContent=s==='on'?'Connected':s==='off'?'Offline':'Connecting...';
+}
+async function init(){
+  setConn('cn');
+  try{await loadAll();setConn('on');}
+  catch(e){setConn('off');toast('Gagal konek: '+e.message,'error');}
+  // Realtime polling: sync koin & member setiap 10 detik
+  setInterval(async()=>{
+    try{
+      const m = await fbG('members');
+      if(!m) return;
+      const newM = m;
+      // Cek apakah ada perubahan koin
+      let changed = false;
+      Object.entries(newM).forEach(([k,v])=>{
+        if(!_M[k] || _M[k].coins !== v.coins){ changed=true; }
+      });
+      _M = newM;
+      updHdr(); updBadge();
+      // Jika di halaman members, refresh tabel dengan highlight
+      if(_cp==='members'){ renderM(); highlightCoinUpdate(); }
+      if(_cp==='lb') rndLB();
+      if(_cp==='overview') rndOV();
+    }catch(e){}
+  }, 10000);
+  // Sync produk setiap 30 detik
+  setInterval(async()=>{
+    try{
+      const k = await fbG('konten');
+      if(k){ _K=k; _G=Array.isArray(_K.gacha)?_K.gacha:_G; }
+      if(_cp==='products') rndP();
+    }catch(e){}
+  }, 30000);
+}
+
+function highlightCoinUpdate(){
+  document.querySelectorAll('#mtb tr').forEach(row=>{
+    row.classList.remove('rt-updated');
+    void row.offsetWidth;
+  });
+}
+async function loadAll(){
+  try{
+    const[m,k,v,lb]=await Promise.all([fbG('members'),fbG('konten'),fbG('konten/vouchers'),fbG('leaderboard')]);
+    _M=m||{};_K=k||{};_V=v||{};_LB=lb||{};
+    _K.config={...DEFAULT_CONFIG,...(_K.config||{})};
+    _K.prices=_K.prices||JSON.parse(JSON.stringify(DEFAULT_PRICES));
+    _K.banners=_K.banners||DEFAULT_BANNERS.slice();
+    _G=Array.isArray(_K.gacha)?_K.gacha:[];
+    try{const rc=await fbG('konten/redeemConfig');if(rc&&typeof rc==='object')_RC={...RDD,...rc};}catch(e){}
+    setConn('on');updHdr();updBadge();rndCur();
+  }catch(e){setConn('off');toast('Gagal load: '+e.message,'error');throw e;}
+}
+async function refreshAll(){try{await loadAll();toast('Data diperbarui ✅','success');}catch(e){}}
+
+function updHdr(){
+  const ma=Object.values(_M),pr=gPr();let s=0,c=0,p=0;
+  ma.forEach(m=>{c+=(m.coins||0);(m.subs||[]).forEach(x=>{if(isAct(x))s++;});});
+  Object.values(pr).forEach(a=>{if(Array.isArray(a))p+=a.length;});
+  document.getElementById('hm').textContent=ma.length;document.getElementById('hs2').textContent=s;
+  document.getElementById('hc').textContent=fmt(c);document.getElementById('hp').textContent=p;
+}
+function updBadge(){
+  const ma=Object.values(_M),pr=gPr();let s=0,p=0,totalCoins=0;
+  ma.forEach(m=>{totalCoins+=(m.coins||0);(m.subs||[]).forEach(x=>{if(isAct(x))s++;});});
+  Object.values(pr).forEach(a=>{if(Array.isArray(a))p+=a.length;});
+  document.getElementById('nb-m').textContent=ma.length;document.getElementById('nb-s').textContent=s;
+  document.getElementById('nb-p').textContent=p;document.getElementById('nb-v').textContent=Object.keys(_V||{}).length;
+  document.getElementById('nb-g').textContent=_G.length;
+  const el_md=document.getElementById('nb-m-detail');if(el_md)el_md.textContent=ma.length+' member';
+  const el_pd=document.getElementById('nb-p-detail');if(el_pd)el_pd.textContent=p+' produk';
+  const el_gd=document.getElementById('nb-g-detail');if(el_gd)el_gd.textContent=_G.length+' hadiah';
+  const el_cd=document.getElementById('nb-c-detail');if(el_cd)el_cd.textContent=Object.keys(_CH||{}).length+' pesan';
+  const el_sd=document.getElementById('nb-s-detail');if(el_sd)el_sd.textContent=s+' subs aktif';
+  const el_coin=document.getElementById('nb-coins-total');if(el_coin)el_coin.textContent=fmt(totalCoins);
+}
+
+// ════════════════════════════════════════════════════════
+//  OVERVIEW
+// ════════════════════════════════════════════════════════
+function rndOV(){
+  const ma=Object.values(_M),pr=gPr();let s=0,c=0,p=0;
+  ma.forEach(m=>{c+=(m.coins||0);(m.subs||[]).forEach(x=>{if(isAct(x))s++;});});
+  Object.values(pr).forEach(a=>{if(Array.isArray(a))p+=a.length;});
+  const av=Object.values(_V||{}).filter(v=>!v.expiry||new Date(v.expiry)>new Date()).length;
+  document.getElementById('ov-m').textContent=ma.length;document.getElementById('ov-s').textContent=s;
+  document.getElementById('ov-c').textContent=fmt(c);document.getElementById('ov-p').textContent=p;document.getElementById('ov-v').textContent=av;
+  const srt=[...ma].sort((a,b)=>(b.joinDate||'').localeCompare(a.joinDate||'')).slice(0,7);
+  document.getElementById('ov-rec').innerHTML=srt.length?`<table class="tbl">${srt.map(m=>{const l=lv(m.coins||0);return`<tr><td><b>${esc(m.name)}</b>${m.julukan?` <span style="color:var(--purple);font-size:10px">(${esc(m.julukan)})</span>`:''}</td><td style="color:${l.color};font-size:11px">${l.emoji} ${l.name}</td><td class="ccell coin-live"><span class="coin-live-dot"></span>🪙 ${fmt(m.coins)}</td><td style="font-size:10px;color:var(--muted)">${m.joinDate||'—'}</td></tr>`;}).join('')}</table>`:'<div class="es"><i class="fa fa-users"></i>Belum ada member</div>';
+  const lc={};LVS.forEach(l=>lc[l.name]=0);ma.forEach(m=>{const l=lv(m.coins||0);lc[l.name]=(lc[l.name]||0)+1;});
+  const mx=Math.max(...Object.values(lc),1);
+  document.getElementById('ov-lv').innerHTML=LVS.map(l=>{const n=lc[l.name]||0,pct=Math.round(n/mx*100);return`<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px"><span style="color:${l.color};font-weight:600">${l.emoji} ${l.name}</span><span style="color:var(--muted)">${n}</span></div><div class="prog"><div class="pf" style="width:${pct}%;background:${l.color};opacity:.7"></div></div></div>`;}).join('');
+  const exp=[];ma.forEach(m=>(m.subs||[]).forEach(x=>{const d=dl(x.expiry);if(d>=0&&d<=7)exp.push({mn:m.name,...x,d});}));exp.sort((a,b)=>a.d-b.d);
+  document.getElementById('ov-ecnt').textContent=exp.length+' subs';
+  document.getElementById('ov-exp').innerHTML=exp.length?`<table class="tbl">${exp.map(x=>`<tr><td><b>${esc(x.mn)}</b></td><td style="font-size:11px">${esc(x.type||'?')}</td><td style="font-size:10px;color:var(--muted)">${x.expiry}</td><td><span class="bge ${x.d<=1?'br':'bgo'}">${x.d}d</span></td></tr>`).join('')}</table>`:'<div class="es"><i class="fa fa-check-circle"></i>Tidak ada yang mau expire</div>';
+  const top=[...ma].sort((a,b)=>(b.coins||0)-(a.coins||0)).slice(0,6);
+  document.getElementById('ov-top').innerHTML=top.length?`<table class="tbl">${top.map((m,i)=>{const l=lv(m.coins||0);return`<tr><td style="width:36px;font-size:14px;text-align:center">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</td><td><b>${esc(m.name)}</b></td><td class="ccell">🪙${fmt(m.coins)}</td><td style="color:${l.color};font-size:11px">${l.name}</td></tr>`;}).join('')}</table>`:'<div class="es"><i class="fa fa-coins"></i>Belum ada data</div>';
+}
+
+// ════════════════════════════════════════════════════════
+//  MEMBERS
+// ════════════════════════════════════════════════════════
+function renderM(){
+  const q=(document.getElementById('msrch')?.value||'').toLowerCase();
+  const arr=Object.entries(_M).map(([k,v])=>({...v,_k:k})).filter(m=>!q||(m.name||'').toLowerCase().includes(q)).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  const tb=document.getElementById('mtb');
+  if(!arr.length){tb.innerHTML='<tr><td colspan="8"><div class="es"><i class="fa fa-search"></i>Tidak ada member</div></td></tr>';return;}
+  tb.innerHTML=arr.map((m,i)=>{
+    const l=lv(m.coins||0);
+    const as=(m.subs||[]).filter(s=>isAct(s));
+    const sc=as.length?as.slice(0,2).map(s=>`<span class="sc2">${esc(s.type||'?')}</span>`).join('')+(as.length>2?`<span class="sc2">+${as.length-2}</span>`:''):'<span style="color:var(--muted);font-size:10px">—</span>';
+    return`<tr><td style="color:var(--muted);font-size:11px">${i+1}</td><td><b>${esc(m.name||'?')}</b>${m.julukan?` <span style="color:var(--purple);font-size:10px">(${esc(m.julukan)})</span>`:''}</td><td style="color:${l.color};font-size:11px;font-weight:600">${l.emoji} ${l.name}</td><td class="ccell">🪙${fmt(m.coins)}</td><td>${sc}</td><td style="font-size:11px;color:var(--text2)">${m.joinDate||'—'}</td><td><span class="bge ${m.role==='developer'||m.role==='admin'?'br':'ba'}">${m.role||'member'}</span></td><td><div style="display:flex;gap:4px"><button class="btn bp2 bxs" onclick="openEM2('${esc(m._k)}')"><i class="fa fa-pen"></i></button><button class="btn bd bxs" onclick="delM('${esc(m._k)}','${esc(m.name||'?')}')"><i class="fa fa-trash"></i></button></div></td></tr>`;
+  }).join('');
+}
+function openEM2(k){
+  _emk=k;const m=_M[k]||{};
+  document.getElementById('em-name').value=m.name||k;
+  document.getElementById('em-role').value=m.role||'member';
+  document.getElementById('em-coins').value=m.coins||0;
+  document.getElementById('em-spent').value=m.totalSpent||0;
+  document.getElementById('em-julukan').value=m.julukan||'';
+  document.getElementById('em-note').value=m.adminNote||'';
+  openM('mEM');
+}
+async function saveEM(){
+  if(!_emk)return;
+  const upd={role:document.getElementById('em-role').value,coins:parseInt(document.getElementById('em-coins').value)||0,totalSpent:parseInt(document.getElementById('em-spent').value)||0,julukan:document.getElementById('em-julukan').value.trim(),adminNote:document.getElementById('em-note').value.trim(),lastActive:new Date().toLocaleString('id-ID')};
+  try{await fbP('members/'+_emk,upd);Object.assign(_M[_emk]||{},upd);updHdr();updBadge();renderM();closeM('mEM');toast('Member diperbarui ✅','success');
+    }catch(e){toast('Gagal: '+e.message,'error');}
+}
+function resetDevM(){
+  if(!_emk)return;
+  conf2(`Reset device ID untuk <b>${esc(_M[_emk]?.name||_emk)}</b>?`,async()=>{
+    try{await fbP('members/'+_emk,{deviceId:null});if(_M[_emk])_M[_emk].deviceId=null;toast('Device ID direset','info');}catch(e){toast('Gagal','error');}
+  });
+}
+async function delM(k,name){
+  conf2(`Hapus member <b>${esc(name)}</b> secara permanen?`,async()=>{
+    try{await fbD('members/'+k);delete _M[k];updHdr();updBadge();renderM();toast('Member '+name+' dihapus','info');
+      }catch(e){toast('Gagal: '+e.message,'error');}
+  },'HAPUS MEMBER','🗑️');
+}
+
+// ════════════════════════════════════════════════════════
+//  SUBSCRIPTIONS
+// ════════════════════════════════════════════════════════
+function renderS(){
+  const rows=[];
+  Object.values(_M).forEach(m=>{(m.subs||[]).forEach((s,si)=>{const d=dl(s.expiry);rows.push({mn:m.name,_k:m.name.replace(/[.#$\[\]]/g,'_'),si,...s,d,act:isAct(s)});});});
+  rows.sort((a,b)=>(a.d-b.d));
+  const tb=document.getElementById('stb');
+  if(!rows.length){tb.innerHTML='<tr><td colspan="7"><div class="es"><i class="fa fa-calendar-xmark"></i>Belum ada subscription</div></td></tr>';return;}
+  tb.innerHTML=rows.map(r=>`<tr><td><b>${esc(r.mn)}</b></td><td style="font-size:12px">${esc(r.type||'?')}</td><td style="font-size:11px;color:var(--muted)">${r.startDate||'—'}</td><td style="font-size:11px;color:var(--muted)">${r.expiry||'—'}</td><td><span class="bge ${r.d<=1?'br':r.d<=3?'bgo':r.d<=7?'bw':'bgr'}">${r.d>=0?r.d+'d':'Expired'}</span></td><td><span class="bge ${r.act?'bgr':'bm'}">${r.act?'AKTIF':'EXPIRED'}</span></td><td><button class="btn bd bxs" onclick="delSub('${esc(r._k)}',${r.si})"><i class="fa fa-trash"></i></button></td></tr>`).join('');
+}
+function updateMemberSelect(){
+  const sel=document.getElementById('as-mem');if(!sel)return;
+  sel.innerHTML=Object.values(_M).map(m=>`<option value="${esc(m.name)}">${esc(m.name)}</option>`).join('');
+}
+async function saveNewSub(){
+  const mname=document.getElementById('as-mem').value,type=document.getElementById('as-type').value.trim(),days=parseInt(document.getElementById('as-days').value)||30;
+  if(!type){toast('Isi tipe/nama produk!','error');return;}
+  const key=mname.replace(/[.#$\[\]]/g,'_');
+  if(!_M[key])_M[key]={name:mname,subs:[]};if(!_M[key].subs)_M[key].subs=[];
+  const now=new Date();const exp=new Date(now);exp.setDate(exp.getDate()+days);
+  const sub={type,days,startDate:now.toLocaleDateString('id-ID'),expiry:exp.toLocaleDateString('id-ID')};
+  _M[key].subs.push(sub);
+  try{await fbP('members/'+key,{subs:_M[key].subs});closeM('mAS');updHdr();updBadge();renderS();toast('Subs ditambahkan ✅','success');}catch(e){_M[key].subs.pop();toast('Gagal: '+e.message,'error');}
+}
+async function delSub(key,idx){
+  conf2('Hapus subscription ini?',async()=>{
+    if(!_M[key]||!_M[key].subs)return;
+    _M[key].subs.splice(idx,1);
+    try{await fbP('members/'+key,{subs:_M[key].subs});updHdr();updBadge();renderS();toast('Subs dihapus','info');}catch(e){toast('Gagal','error');}
+  });
+}
+
+// ════════════════════════════════════════════════════════
+//  LEADERBOARD
+// ════════════════════════════════════════════════════════
+function rndLB(){
+  const ma=Object.values(_M).sort((a,b)=>(b.coins||0)-(a.coins||0));
+  const tb=document.getElementById('lbtb');
+  if(!ma.length){tb.innerHTML='<tr><td colspan="6"><div class="es"><i class="fa fa-trophy"></i>Belum ada data</div></td></tr>';return;}
+  tb.innerHTML=ma.map((m,i)=>{const l=lv(m.coins||0);const ts=(m.subs||[]).length;
+  return`<tr><td style="font-size:16px;text-align:center;width:48px">${['🥇','🥈','🥉'][i]||'<span style="color:var(--muted)">'+('0'+(i+1)).slice(-2)+'</span>'}</td><td><b>${esc(m.name)}</b>${m.julukan?` <span style="color:var(--purple);font-size:10px">(${esc(m.julukan)})</span>`:''}</td><td style="color:${l.color};font-size:11px">${l.emoji} ${l.name}</td><td class="ccell" style="font-weight:700">🪙 ${fmt(m.coins)}</td><td style="font-size:11px;color:var(--muted)">${ts} subs</td><td style="font-size:10px;color:var(--muted)">${m.joinDate||'—'}</td></tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════
+//  PRODUCTS — BUG FIXED v2
+// ════════════════════════════════════════════════════════
+function _buildCatOptions(){
+  const fromOrder = gCO();
+  const fromPrices = Object.keys(gPr());
+  const all = [...new Set([...fromOrder, ...fromPrices])].filter(Boolean);
+  return all.length ? all : ['sewa','premium','script','lainnya'];
+}
+
+// ── CATEGORY CHIPS INLINE ──────────────────────────────────────
+function renderCatChipsMgr(){
+  const el = document.getElementById('cat-chips-mgr');
+  if(!el) return;
+  const cats = _buildCatOptions();
+  const def = ['sewa','premium','script','lainnya'];
+  el.innerHTML = cats.map(c=>{
+    const m = gCM(c);
+    const isActive = c === _pc;
+    const isDef = def.includes(c);
+    return `<div class="cat-mgr-chip${isActive?' active':''}" onclick="switchCat('${c}')">
+      <span>${m.icon||'📦'}</span>
+      <span style="font-size:10px;font-weight:700">${m.label||c}</span>
+      ${!isDef ? `<span class="chip-del" onclick="event.stopPropagation();deleteCatInline('${c}','${m.label||c}')" title="Hapus">✕</span>` : ''}
+    </div>`;
+  }).join('');
+  const lbl = document.getElementById('active-cat-label');
+  if(lbl){ const m=gCM(_pc); lbl.textContent=(m.icon||'')+'  '+(m.label||_pc); }
+}
+
+window.switchCat = function(cat){
+  _pc = cat;
+  renderCatChipsMgr();
+  renderProdTable();
+};
+
+window.toggleCatAddForm = function(){
+  const f = document.getElementById('cat-add-form');
+  if(f) f.style.display = f.style.display==='none' ? 'block' : 'none';
+};
+
+window.deleteCatInline = function(key, label){
+  const cnt = (gPr()[key]||[]).length;
+  conf2(`Hapus kategori <b>${esc(label)}</b>${cnt>0?`? Ada <b>${cnt} produk</b> yang ikut terhapus!`:'?'}`,
+  async()=>{
+    if(!_K.config) _K.config={};
+    if(_K.config.categoryMeta) delete _K.config.categoryMeta[key];
+    if(_K.config.categoryOrder) _K.config.categoryOrder = _K.config.categoryOrder.filter(k=>k!==key);
+    const prices = gPr(); delete prices[key];
+    try{
+      await fbS('konten/config', _K.config);
+      await fbS('konten/prices', prices);
+      if(_pc === key){ const cats=_buildCatOptions(); _pc=cats[0]||'sewa'; }
+      rndCats(); rndP();
+      toast('Kategori '+label+' dihapus','info');
+    }catch(e){ toast('Gagal: '+e.message,'error'); }
+  });
+};
+
+function renderCatSel(forceVal){
+  const sel = document.getElementById('sel-cat');
+  if(!sel) return;
+  const cats = _buildCatOptions();
+  const current = forceVal !== undefined ? forceVal : (sel.value || _pc);
+  sel.innerHTML = cats.map(c=>{
+    const m = gCM(c);
+    return `<option value="${esc(c)}">${m.icon||'📦'} ${m.label||c}</option>`;
+  }).join('');
+  if(cats.includes(current)) sel.value = current;
+  else sel.value = cats[0] || 'sewa';
+}
+
+function rndP(){
+  renderCatChipsMgr();
+  renderProdTable();
+}
+
+function renderProdTable(){
+  const cat = _pc;
+  const pr = gPr();
+  const items = pr[cat] || [];
+  const tb = document.getElementById('ptb');
+  const allProds = Object.values(pr).flat();
+  const pd = document.getElementById('nb-p-detail');
+  if(pd) pd.textContent = allProds.length + ' produk';
+  const lbl = document.getElementById('active-cat-label');
+  if(lbl){ const m=gCM(cat); lbl.textContent=(m.icon||'📦')+' '+(m.label||cat); }
+  if(!items.length){
+    tb.innerHTML = '<tr><td colspan="7"><div class="es"><i class="fa fa-box-open"></i>Belum ada produk di kategori ini</div></td></tr>';
+    return;
+  }
+  tb.innerHTML = items.map((item,idx)=>{
+    const bens = item.b||[];
+    const benHtml = bens.length
+      ? bens.slice(0,3).map(b=>`<span class="sc2" style="font-size:8px">${esc(b.text||b)}</span>`).join(' ')
+        +(bens.length>3?`<span class="sc2" style="font-size:8px">+${bens.length-3}</span>`:'')
+      : '<span style="color:var(--muted);font-size:10px">—</span>';
+    const safeCat  = cat.replace(/'/g,"\\'");
+    const safeName = (item.n||'').replace(/'/g,"\\'");
+    return `<tr>
+      <td>
+        <div style="display:flex;gap:3px">
+          <button class="btn bp2 bxs" onclick="mvProd('${safeCat}',${idx},-1)" ${idx===0?'disabled style="opacity:.35"':''}>↑</button>
+          <button class="btn bp2 bxs" onclick="mvProd('${safeCat}',${idx},1)"  ${idx===items.length-1?'disabled style="opacity:.35"':''}>↓</button>
+        </div>
+      </td>
+      <td style="color:var(--muted);font-size:11px">${idx+1}</td>
+      <td><b>${esc(item.n||item.name||'?')}</b></td>
+      <td class="ccell" style="font-weight:700">${esc(item.p||item.price||'—')}</td>
+      <td>${benHtml}</td>
+      <td>${item.img?`<img src="${esc(item.img)}" style="height:36px;border-radius:6px;border:1px solid var(--border);" onerror="this.style.display='none'">`:'—'}</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn bw bxs" onclick="window._openEditProd('${safeCat}',${idx})"><i class="fa fa-pen"></i></button>
+        <button class="btn bd bxs" onclick="window._delProd('${safeCat}',${idx},'${safeName}')"><i class="fa fa-trash"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+window.mvProd = async function(cat, idx, dir){
+  const pr = gPr();
+  const items = pr[cat];
+  if(!items) return;
+  const ni = idx+dir;
+  if(ni<0||ni>=items.length) return;
+  [items[idx],items[ni]] = [items[ni],items[idx]];
+  try{
+    await fbS('konten/prices', pr);
+    if(_K.prices) _K.prices=pr; else if(_K.config) _K.config.prices=pr;
+    renderProdTable();
+    toast('Urutan diperbarui ✅','success');
+  }catch(e){
+    [items[idx],items[ni]] = [items[ni],items[idx]];
+    toast('Gagal: '+e.message,'error');
+  }
+};
+
+function _fillApCatSelect(selectedCat){
+  const sel = document.getElementById('ap-cat');
+  if(!sel) return;
+  const cats = _buildCatOptions();
+  sel.innerHTML = cats.map(c=>{
+    const m = gCM(c);
+    return `<option value="${esc(c)}">${m.icon||'📦'} ${m.label||c}</option>`;
+  }).join('');
+  const target = selectedCat || _pc;
+  if(cats.includes(target)) sel.value = target;
+  else sel.value = cats[0]||'sewa';
+}
+
+function openAddProd(){
+  window._editProdIdx = null;
+  document.getElementById('mAP-title').textContent = '◈ TAMBAH PRODUK';
+  _fillApCatSelect(null);
+  ['ap-name','ap-price','ap-img','ap-ben'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('ap-imgp').style.display='none';
+  openM('mAP');
+}
+
+window._openEditProd = function(cat,idx){
+  window._editProdIdx={cat,idx};
+  document.getElementById('mAP-title').textContent='◈ EDIT PRODUK';
+  const pr=gPr(), item=(pr[cat]||[])[idx];
+  if(!item){toast('Produk tidak ditemukan!','error');return;}
+  _fillApCatSelect(cat);
+  document.getElementById('ap-name').value  = item.n||item.name||'';
+  document.getElementById('ap-price').value = item.p||item.price||'';
+  document.getElementById('ap-img').value   = item.img||'';
+  const bens=item.b||[];
+  document.getElementById('ap-ben').value = bens.map(b=>b.text||b).join('\n');
+  prevApImg(); openM('mAP');
+};
+function openEditProd(cat,idx){window._openEditProd(cat,idx);}
+
+window._delProd = function(cat,idx,name){
+  conf2(`Hapus produk <b>${esc(name)}</b>?`,async()=>{
+    const pr=gPr();
+    if(!pr[cat]||pr[cat][idx]===undefined){toast('Produk tidak ditemukan!','error');return;}
+    pr[cat].splice(idx,1);
+    try{
+      await fbS('konten/prices',pr);
+      if(_K.prices) _K.prices=pr; else if(_K.config) _K.config.prices=pr;
+      renderProdTable(); updBadge();
+      toast('Produk dihapus','info');
+    }catch(e){toast('Gagal: '+e.message,'error');}
+  });
+};
+function delProd(cat,idx,name){window._delProd(cat,idx,name);}
+
+async function saveNewProd(){
+  const cat   = document.getElementById('ap-cat').value;
+  const name  = document.getElementById('ap-name').value.trim();
+  const price = document.getElementById('ap-price').value.trim();
+  const img   = document.getElementById('ap-img').value.trim();
+  const benLines = document.getElementById('ap-ben').value.split('\n').map(l=>l.trim()).filter(Boolean);
+  const benefits = benLines.map(t=>({icon:'fa-solid fa-check',text:t}));
+  if(!name||!price){toast('Nama dan harga wajib!','error');return;}
+  const pr=gPr(); if(!pr[cat]) pr[cat]=[];
+  const ei=window._editProdIdx;
+  if(ei&&ei.cat===cat&&ei.idx!=null) pr[cat][ei.idx]={n:name,p:price,img,b:benefits};
+  else pr[cat].push({n:name,p:price,img,b:benefits});
+  try{
+    await fbS('konten/prices',pr);
+    if(_K.prices) _K.prices=pr; else if(_K.config) _K.config.prices=pr;
+    _pc=cat; closeM('mAP'); window._editProdIdx=null;
+    rndP(); updBadge();
+    const isEdit = ei && ei.idx != null;
+    toast('Produk disimpan ✅','success');
+  }catch(e){toast('Gagal: '+e.message,'error');}
+}
+
+function prevApImg(){
+  const u=document.getElementById('ap-img')?.value.trim();
+  const w=document.getElementById('ap-imgp');
+  if(u){document.getElementById('ap-imge').src=u;w.style.display='block';}
+  else w.style.display='none';
+}
+
+// ════════════════════════════════════════════════════════
+//  BANNERS
+// ════════════════════════════════════════════════════════
+function rndBn(){
+  const bns=gBn();const el=document.getElementById('blist');
+  if(!bns.length){el.innerHTML='<div class="es"><i class="fa fa-images"></i>Belum ada banner. Tambahkan URL gambar di bawah.</div>';return;}
+  el.innerHTML=bns.map((b,i)=>`<div class="bni"><img class="bni-thumb" src="${esc(b)}" onerror="this.style.background='rgba(0,234,255,0.05)'"><div style="flex:1;font-size:11px;color:var(--text2);word-break:break-all">${esc(b.substring(0,60))}${b.length>60?'…':''}</div><button class="btn bp2 bxs" onclick="prevBn('${esc(b)}')" title="Preview"><i class="fa fa-eye"></i></button><button class="btn bd bxs" onclick="delBn(${i})"><i class="fa fa-trash"></i></button></div>`).join('');
+}
+function prevBn(url){document.getElementById('bprev').innerHTML=`<img src="${esc(url)}" style="width:100%;border-radius:8px;border:1px solid var(--borderA);" onerror="this.parentElement.innerHTML='<div class=es><i class=fa fa-image></i>Gambar tidak bisa dimuat</div>'">`;}
+async function addBanner(){const u=document.getElementById('nb-url').value.trim();if(!u){toast('Masukkan URL gambar!','error');return;}const bns=gBn();bns.push(u);try{await fbS('konten/banners',bns);sBn(bns);document.getElementById('nb-url').value='';rndBn();toast('Banner ditambahkan ✅','success');}catch(e){toast('Gagal: '+e.message,'error');}}
+async function delBn(i){conf2('Hapus banner ini?',async()=>{const bns=gBn();bns.splice(i,1);try{await fbS('konten/banners',bns);sBn(bns);rndBn();toast('Banner dihapus','info');}catch(e){toast('Gagal','error');}});}
+
+// ════════════════════════════════════════════════════════
+//  CATEGORIES — FULL ADD / DELETE / REORDER
+// ════════════════════════════════════════════════════════
+function rndCats(){
+  const ord = gCO();
+  const def = ['sewa','premium','script','lainnya'];
+  document.getElementById('catcnt').textContent = ord.length;
+
+  const el = document.getElementById('catlist');
+  if(!el) return;
+
+  if(!ord.length){
+    el.innerHTML = '<div class="es"><i class="fa fa-th-large"></i>Belum ada kategori</div>';
+    return;
+  }
+
+  el.innerHTML = ord.map((k,i)=>{
+    const m = gCM(k);
+    const isDef = def.includes(k);
+    const prodCount = (gPr()[k]||[]).length;
+    return `<div class="catitem" id="catitem-${k}">
+      <div style="font-size:22px;flex-shrink:0">${m.icon||'📦'}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:14px">${esc(m.label||k)}</div>
+        <div style="font-family:'Share Tech Mono';font-size:9px;color:var(--muted);margin-top:2px">
+          ID: ${esc(k)} &nbsp;·&nbsp;
+          <span style="color:var(--accent)">${prodCount} produk</span>
+          ${isDef ? ' &nbsp;·&nbsp; <span style="color:var(--muted)">default</span>' : ''}
+        </div>
+      </div>
+      <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
+        <div style="width:14px;height:14px;border-radius:50%;background:${m.color||'#aaa'};border:1px solid rgba(255,255,255,.2);flex-shrink:0"></div>
+        <button class="btn bp2 bxs" onclick="mvCat('${esc(k)}',-1)" ${i===0?'disabled style="opacity:.3"':''} title="Pindah ke atas">↑</button>
+        <button class="btn bp2 bxs" onclick="mvCat('${esc(k)}',1)" ${i===ord.length-1?'disabled style="opacity:.3"':''} title="Pindah ke bawah">↓</button>
+        ${!isDef
+          ? `<button class="btn bd bxs" onclick="delCat('${esc(k)}','${esc(m.label||k)}')" title="Hapus kategori"><i class="fa fa-trash"></i></button>`
+          : `<span style="width:29px;display:inline-block"></span>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+
+  // Update status info
+  const statusEl = document.getElementById('cat-status-info');
+  if(statusEl){
+    const total = Object.values(gPr()).flat().length;
+    const custom = ord.filter(k=>!def.includes(k)).length;
+    statusEl.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div>📦 Total produk semua kategori: <b style="color:var(--accent)">${total}</b></div>
+        <div>📂 Kategori default: <b style="color:var(--text2)">4</b></div>
+        <div>✨ Kategori custom: <b style="color:var(--purple)">${custom}</b></div>
+        <div>📋 Total kategori: <b style="color:var(--green)">${ord.length}</b></div>
+      </div>`;
+  }
+}
+
+async function saveNewCat(){
+  // Called from modal mAC
+  const id    = document.getElementById('nc-id').value.trim().toLowerCase().replace(/\s/g,'_');
+  const label = document.getElementById('nc-label').value.trim();
+  const icon  = document.getElementById('nc-icon').value.trim() || '📦';
+  const color = document.getElementById('nc-color').value || '#00eaff';
+  if(!id||!label){ toast('ID dan label wajib!','error'); return; }
+  if(!/^[a-z0-9_]+$/.test(id)){ toast('ID hanya boleh huruf kecil, angka, underscore!','error'); return; }
+  await _doSaveNewCat(id, label, icon, color);
+  closeM('mAC');
+  ['nc-id','nc-label','nc-icon'].forEach(x=>{ const el=document.getElementById(x); if(el) el.value=''; });
+}
+
+window.saveNewCatFromCatsPage = async function(){
+  // Called from page-cats inline form
+  const id    = document.getElementById('nc-id-cats').value.trim().toLowerCase().replace(/\s/g,'_');
+  const label = document.getElementById('nc-label-cats').value.trim();
+  const icon  = document.getElementById('nc-icon-cats').value.trim() || '📦';
+  const color = document.getElementById('nc-color-cats').value || '#00eaff';
+  if(!id||!label){ toast('ID dan nama tampil wajib diisi!','error'); return; }
+  if(!/^[a-z0-9_]+$/.test(id)){ toast('ID hanya huruf kecil, angka, dan underscore!','error'); return; }
+  await _doSaveNewCat(id, label, icon, color);
+  ['nc-id-cats','nc-label-cats','nc-icon-cats'].forEach(x=>{ const el=document.getElementById(x); if(el) el.value=''; });
+};
+
+async function _doSaveNewCat(id, label, icon, color){
+  if(!_K.config) _K.config = {};
+  if(!_K.config.categoryMeta) _K.config.categoryMeta = {};
+  if(!_K.config.categoryOrder) _K.config.categoryOrder = gCO();
+  if(_K.config.categoryOrder.includes(id)){
+    toast('Kategori dengan ID "'+id+'" sudah ada!','error'); return;
+  }
+  _K.config.categoryMeta[id] = {icon, label, color};
+  _K.config.categoryOrder.push(id);
+  const prices = gPr();
+  if(!prices[id]) prices[id] = [];
+  try{
+    await fbS('konten/config', _K.config);
+    await fbS('konten/prices', prices);
+    if(_K.prices) _K.prices = prices;
+    rndCats(); rndP(); updBadge();
+    toast('Kategori "'+label+'" berhasil ditambahkan ✅','success');
+  }catch(e){ toast('Gagal: '+e.message,'error'); }
+}
+
+function mvCat(key, dir){
+  if(!_K.config) _K.config = {};
+  if(!_K.config.categoryOrder) _K.config.categoryOrder = gCO();
+  const ord = _K.config.categoryOrder;
+  const idx = ord.indexOf(key);
+  const ni  = idx + dir;
+  if(ni < 0 || ni >= ord.length) return;
+  [ord[idx], ord[ni]] = [ord[ni], ord[idx]];
+  rndCats();
+}
+
+async function saveMenuOrd(){
+  if(!_K.config) _K.config = {};
+  try{
+    await fbS('konten/config', _K.config);
+    toast('Urutan kategori tersimpan ✅','success');
+  }catch(e){ toast('Gagal: '+e.message,'error'); }
+}
+
+function delCat(key, label){
+  const def = ['sewa','premium','script','lainnya'];
+  if(def.includes(key)){ toast('Kategori default tidak bisa dihapus!','error'); return; }
+  const cnt = (gPr()[key]||[]).length;
+  conf2(
+    `Hapus kategori <b>${esc(label)}</b>${cnt>0 ? `?<br><br>⚠️ Ada <b>${cnt} produk</b> di kategori ini yang akan ikut terhapus!` : '?'}`,
+    async()=>{
+      if(!_K.config) return;
+      if(_K.config.categoryMeta) delete _K.config.categoryMeta[key];
+      if(_K.config.categoryOrder) _K.config.categoryOrder = _K.config.categoryOrder.filter(k=>k!==key);
+      const prices = gPr();
+      delete prices[key];
+      try{
+        await fbS('konten/config', _K.config);
+        await fbS('konten/prices', prices);
+        if(_K.prices) _K.prices = prices;
+        if(_pc === key){
+          const cats = _buildCatOptions();
+          _pc = cats[0] || 'sewa';
+        }
+        rndCats(); rndP(); updBadge();
+        toast('Kategori "'+label+'" dihapus','info');
+      }catch(e){ toast('Gagal: '+e.message,'error'); }
+    },
+    'HAPUS KATEGORI', '🗑️'
+  );
+}
+
+// ════════════════════════════════════════════════════════
+//  MEDIA
+// ════════════════════════════════════════════════════════
+function rndMedia(){const cfg={...DEFAULT_CONFIG,...(_K.config||{})};document.getElementById('cfg-vid').value=cfg.bg_video||cfg.bgVideo||'';document.getElementById('cfg-mus').value=cfg.bg_music||cfg.bgMusic||'';document.getElementById('cfg-wa').value=cfg.wa_number||'6281317205434';}
+function prevVid(){const u=document.getElementById('cfg-vid').value.trim();const w=document.getElementById('vidp');const v=document.getElementById('vide');if(u){if(/\.(png|jpe?g|webp|gif)(\?|$)/i.test(u)){v.outerHTML='<img id="vide" style="width:100%;border-radius:8px;border:1px solid var(--borderA);max-height:160px;object-fit:cover;">';document.getElementById('vide').src=u;}else{if(v.tagName!=='VIDEO'){v.outerHTML='<video id="vide" controls muted style="width:100%;border-radius:8px;border:1px solid var(--borderA);max-height:160px;"></video>'; }document.getElementById('vide').src=u;}w.style.display='block';}else w.style.display='none';}
+function prevMus(){const u=document.getElementById('cfg-mus').value.trim();const w=document.getElementById('musp');if(u){document.getElementById('muse').src=u;w.style.display='block';}else w.style.display='none';}
+async function saveMedia(){const bgv=document.getElementById('cfg-vid').value.trim(),bgm=document.getElementById('cfg-mus').value.trim(),wa=document.getElementById('cfg-wa').value.trim();if(!_K.config)_K.config={};_K.config.bg_video=bgv;_K.config.bg_music=bgm;_K.config.wa_number=wa;try{await fbS('konten/config',_K.config);toast('Media config disimpan ✅','success');}catch(e){toast('Gagal: '+e.message,'error');}}
+
+// ════════════════════════════════════════════════════════
+//  VOUCHERS
+// ════════════════════════════════════════════════════════
+function rndV(){
+  const ent=Object.entries(_V||{});const tb=document.getElementById('vtb');
+  if(!ent.length){tb.innerHTML='<tr><td colspan="9"><div class="es"><i class="fa fa-ticket"></i>Belum ada voucher</div></td></tr>';return;}
+  tb.innerHTML=ent.map(([code,v])=>{const exp=v.expiry&&new Date(v.expiry)<new Date();const full=(v.usedCount||0)>=(v.maxUse||9999);const act=!exp&&!full;
+  return`<tr><td style="font-family:'Share Tech Mono';font-weight:700;color:var(--gold)">${esc(code)}</td><td><span class="bge ba">${esc(v.type||'?')}</span></td><td style="font-family:'Share Tech Mono';font-weight:700;color:var(--accent)">${v.type==='percent'?v.value+'%':'Rp'+fmt(v.value)}</td><td style="font-family:'Share Tech Mono'">${v.maxUse||'∞'}</td><td style="font-family:'Share Tech Mono';color:${(v.usedCount||0)>0?'var(--gold)':'var(--muted)'}">${v.usedCount||0}</td><td style="font-size:11px;color:var(--muted)">${v.expiry||'—'}</td><td style="font-size:11px">${v.forMenu||'all'}</td><td><span class="bge ${act?'bgr':'bm'}">${act?'AKTIF':'NONAKTIF'}</span></td><td><button class="btn bd bxs" onclick="delV('${esc(code)}')"><i class="fa fa-trash"></i></button></td></tr>`;
+  }).join('');
+}
+async function saveNewVoucher(){
+  const code=document.getElementById('av-code').value.trim().toUpperCase(),type=document.getElementById('av-type').value,value=parseFloat(document.getElementById('av-val').value)||0,maxUse=parseInt(document.getElementById('av-max').value)||999,expiry=document.getElementById('av-exp').value,fm=document.getElementById('av-for').value;
+  if(!code||!value){toast('Kode dan nilai wajib!','error');return;}
+  const vd={type,value,maxUse,expiry,usedCount:0,forMenu:fm,createdAt:Date.now()};
+  try{await fbS('konten/vouchers/'+code,vd);_V[code]=vd;closeM('mAV');rndV();updBadge();['av-code','av-val'].forEach(x=>document.getElementById(x).value='');toast('Voucher '+code+' dibuat ✅','success');}catch(e){toast('Gagal: '+e.message,'error');}
+}
+function delV(code){conf2(`Hapus voucher <b>${esc(code)}</b>?`,async()=>{try{await fbD('konten/vouchers/'+code);delete _V[code];rndV();updBadge();toast('Voucher dihapus','info');}catch(e){toast('Gagal: '+e.message,'error');}});}
+
+// ════════════════════════════════════════════════════════
+//  GACHA
+// ════════════════════════════════════════════════════════
+// ── GACHA RENDER ──────────────────────────────────────
+function rndG(){
+  const tb = document.getElementById('gtb');
+  const cc = {S:'gcS',A:'gcA',B:'gcB',C:'gcC'};
+  const totalW = _G.reduce((s,g)=>s+(g.weight||0),0);
+  const nbg = document.getElementById('nb-g-detail');
+  const nbw = document.getElementById('nb-g-weight');
+  if(nbg) nbg.textContent = _G.length+' hadiah';
+  if(nbw) nbw.textContent = 'Total bobot: '+totalW;
+  if(!_G.length){
+    tb.innerHTML='<tr><td colspan="10"><div class="es"><i class="fa fa-dice"></i>Belum ada hadiah gacha. Klik "+ Tambah Hadiah"</div></td></tr>';
+    return;
+  }
+  tb.innerHTML = _G.map((g,i)=>{
+    const pct = totalW>0 ? ((g.weight||0)/totalW*100).toFixed(1) : '0.0';
+    const icon = g.icon||'🎁';
+    return `<tr>
+      <td><div style="display:flex;gap:3px">
+        <button class="btn bp2 bxs" onclick="mvG(${i},-1)" ${i===0?'disabled style="opacity:.35"':''}><i class="fa fa-arrow-up"></i></button>
+        <button class="btn bp2 bxs" onclick="mvG(${i},1)"  ${i===_G.length-1?'disabled style="opacity:.35"':''}><i class="fa fa-arrow-down"></i></button>
+      </div></td>
+      <td style="color:var(--muted);font-size:11px">${i+1}</td>
+      <td style="font-size:20px">${icon}</td>
+      <td><b>${esc(g.name||'?')}</b></td>
+      <td><span class="bge ba">${esc(g.type||'?')}</span></td>
+      <td style="font-family:'Share Tech Mono'">${g.days||g.value||0}</td>
+      <td><span class="bge ${cc[g.class]||'bm'}">Class ${esc(g.class||'?')}</span></td>
+      <td style="font-family:'Share Tech Mono';color:var(--muted)">${g.weight||1}x</td>
+      <td style="font-family:'Share Tech Mono';color:var(--accent);font-size:10px">${pct}%</td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn bw bxs" onclick="openEditGacha(${i})" title="Edit"><i class="fa fa-pen"></i></button>
+        <button class="btn bd bxs" onclick="delG(${i},'${esc(g.name||'?')}')" title="Hapus"><i class="fa fa-trash"></i></button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── GACHA ADD / EDIT ──────────────────────────────────
+window._editGachaIdx = null;
+
+window.openAddGacha = function(){
+  window._editGachaIdx = null;
+  document.getElementById('mAG-title').textContent = '◈ TAMBAH HADIAH GACHA';
+  document.getElementById('gp-save-btn').innerHTML = '<i class="fa fa-dice"></i> Tambah Hadiah';
+  document.getElementById('gp-name').value = '';
+  document.getElementById('gp-type').value = 'subs';
+  document.getElementById('gp-val').value  = '7';
+  document.getElementById('gp-weight').value = '5';
+  document.getElementById('gp-class').value = 'C';
+  const ic = document.getElementById('gp-icon');
+  if(ic) ic.value = '🎁';
+  openM('mAG');
+};
+
+window.openEditGacha = function(idx){
+  const g = _G[idx];
+  if(!g){ toast('Data tidak ditemukan!','error'); return; }
+  window._editGachaIdx = idx;
+  document.getElementById('mAG-title').textContent = '◈ EDIT HADIAH GACHA';
+  document.getElementById('gp-save-btn').innerHTML = '<i class="fa fa-floppy-disk"></i> Simpan Perubahan';
+  document.getElementById('gp-name').value   = g.name||'';
+  document.getElementById('gp-type').value   = g.type||'subs';
+  document.getElementById('gp-val').value    = g.days||g.value||7;
+  document.getElementById('gp-weight').value = g.weight||5;
+  document.getElementById('gp-class').value  = g.class||'C';
+  const ic = document.getElementById('gp-icon');
+  if(ic) ic.value = g.icon||'🎁';
+  openM('mAG');
+};
+
+async function saveNewGacha(){
+  const name   = document.getElementById('gp-name').value.trim();
+  const type   = document.getElementById('gp-type').value;
+  const days   = parseInt(document.getElementById('gp-val').value)||7;
+  const weight = parseInt(document.getElementById('gp-weight').value)||5;
+  const cls    = document.getElementById('gp-class').value;
+  const icon   = document.getElementById('gp-icon')?.value.trim()||'🎁';
+  if(!name){ toast('Nama hadiah wajib diisi!','error'); return; }
+  const item = {name, type, days, weight, class:cls, icon};
+  const idx  = window._editGachaIdx;
+  if(idx !== null && idx !== undefined && idx >= 0){
+    // EDIT mode
+    _G[idx] = item;
+    try{
+      await fbS('konten/gacha',_G);
+      closeM('mAG'); window._editGachaIdx=null;
+      rndG(); updBadge();
+      toast('Hadiah diperbarui ✅','success');
+    }catch(e){ toast('Gagal: '+e.message,'error'); }
+  } else {
+    // ADD mode
+    _G.push(item);
+    try{
+      await fbS('konten/gacha',_G);
+      closeM('mAG'); window._editGachaIdx=null;
+      rndG(); updBadge();
+      toast('Hadiah ditambahkan ✅','success');
+    }catch(e){ _G.pop(); toast('Gagal: '+e.message,'error'); }
+  }
+}
+
+async function mvG(idx,dir){
+  const ni=idx+dir;
+  if(ni<0||ni>=_G.length) return;
+  [_G[idx],_G[ni]]=[_G[ni],_G[idx]];
+  try{await fbS('konten/gacha',_G);rndG();}
+  catch(e){[_G[idx],_G[ni]]=[_G[ni],_G[idx]];toast('Gagal','error');}
+}
+
+function delG(idx,name){
+  conf2(`Hapus hadiah <b>${esc(name)}</b>?`,async()=>{
+    _G.splice(idx,1);
+    try{await fbS('konten/gacha',_G);rndG();updBadge();toast('Hadiah dihapus','info');}
+    catch(e){toast('Gagal','error');}
+  });
+}
+
+// ════════════════════════════════════════════════════════
+//  REDEEM
+// ════════════════════════════════════════════════════════
+// ── REDEEM RENDER ─────────────────────────────────────
+function rndRd(){
+  const entries = Object.entries(_RC);
+  const nb = document.getElementById('nb-rd-detail');
+  if(nb) nb.textContent = entries.length+' item';
+  document.getElementById('rdlist').innerHTML = entries.map(([k,r])=>`
+    <div class="ri">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:26px">${r.icon||'🎁'}</span>
+          <div>
+            <div style="font-weight:700;font-size:14px">${esc(r.name||k)}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${esc(r.desc||'')}</div>
+            <div style="font-family:'Share Tech Mono';font-size:9px;color:var(--muted);margin-top:2px">ID: ${esc(k)}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label class="tgl"><input type="checkbox" id="re-${k}" ${r.enabled?'checked':''}><div class="tt"></div><div class="tb2"></div></label>
+          <span class="bge ${r.enabled?'bgr':'bm'}">${r.enabled?'AKTIF':'MATI'}</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span style="font-size:11px;color:var(--text2);white-space:nowrap">Biaya Koin:</span>
+        <input type="number" class="fc" id="rc-${k}" value="${r.cost||0}" style="width:100px;font-family:'Share Tech Mono'">
+        <span class="bge bw">🪙 Koin</span>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <button class="btn bw bxs" onclick="openEditRdItem('${esc(k)}')"><i class="fa fa-pen"></i> Edit</button>
+          <button class="btn bd bxs" onclick="delRdItem('${esc(k)}','${esc(r.name||k)}')"><i class="fa fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+async function saveRdFb(){
+  Object.keys(_RC).forEach(k=>{
+    const i=document.getElementById('rc-'+k), e=document.getElementById('re-'+k);
+    if(i) _RC[k].cost=parseInt(i.value)||_RC[k].cost;
+    if(e) _RC[k].enabled=e.checked;
+  });
+  try{await fbS('konten/redeemConfig',_RC);toast('Redeem config disimpan ✅','success');}
+  catch(e){toast('Gagal: '+e.message,'error');}
+}
+
+window._editRdKey = null;
+
+window.openAddRdItem = function(){
+  window._editRdKey = null;
+  document.getElementById('mARD-title').textContent = '◈ TAMBAH ITEM REDEEM';
+  ['rd-id','rd-name','rd-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('rd-icon').value    = '🎁';
+  document.getElementById('rd-cost').value    = '100';
+  document.getElementById('rd-enabled').value = 'true';
+  const rid = document.getElementById('rd-id');
+  rid.removeAttribute('disabled'); rid.style.opacity='1';
+  openM('mARD');
+};
+
+window.openEditRdItem = function(key){
+  const r = _RC[key];
+  if(!r){toast('Item tidak ditemukan!','error');return;}
+  window._editRdKey = key;
+  document.getElementById('mARD-title').textContent = '◈ EDIT ITEM REDEEM';
+  document.getElementById('rd-id').value      = key;
+  document.getElementById('rd-icon').value    = r.icon||'🎁';
+  document.getElementById('rd-name').value    = r.name||'';
+  document.getElementById('rd-desc').value    = r.desc||'';
+  document.getElementById('rd-cost').value    = r.cost||0;
+  document.getElementById('rd-enabled').value = r.enabled?'true':'false';
+  const rid = document.getElementById('rd-id');
+  rid.setAttribute('disabled','disabled'); rid.style.opacity='0.5';
+  openM('mARD');
+};
+
+window.saveRdItem = async function(){
+  const isEdit = !!window._editRdKey;
+  const key     = isEdit ? window._editRdKey : document.getElementById('rd-id').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
+  const icon    = document.getElementById('rd-icon').value.trim()||'🎁';
+  const name    = document.getElementById('rd-name').value.trim();
+  const desc    = document.getElementById('rd-desc').value.trim();
+  const cost    = parseInt(document.getElementById('rd-cost').value)||0;
+  const enabled = document.getElementById('rd-enabled').value==='true';
+  if(!key||!name){toast('ID dan nama wajib diisi!','error');return;}
+  if(!isEdit && _RC[key]){toast('ID "'+key+'" sudah ada!','error');return;}
+  _RC[key] = {icon,name,desc,cost,enabled};
+  try{
+    await fbS('konten/redeemConfig',_RC);
+    closeM('mARD'); window._editRdKey=null;
+    rndRd();
+    toast((isEdit?'Item diperbarui':'Item ditambahkan')+' ✅','success');
+  }catch(e){toast('Gagal: '+e.message,'error');}
+};
+
+window.delRdItem = function(key,name){
+  conf2(`Hapus item redeem <b>${esc(name)}</b>?`,async()=>{
+    delete _RC[key];
+    try{
+      await fbS('konten/redeemConfig',_RC);
+      rndRd();
+      toast('Item redeem dihapus','info');
+    }catch(e){toast('Gagal: '+e.message,'error');}
+  },'HAPUS ITEM','🗑️');
+};
+
+
+// ════════════════════════════════════════════════════════
+//  PAYMENT
+// ════════════════════════════════════════════════════════
+function rndPay(){
+  const cfg=_K.config||{},pay=cfg.payment||{};
+  document.getElementById('pay-num').value=pay.accountNumber||cfg.account_number||'081317205434';
+  document.getElementById('pay-name').value=pay.accountName||cfg.account_name||'Zarr Marketplace';
+  document.getElementById('pay-qr').value=pay.qrCode||cfg.qr_code||'https://img2.pixhost.to/images/6663/707567460_alip-1774345634522.jpg';
+  document.getElementById('pay-dana').checked=pay.methods?.dana??cfg.methods_dana??true;
+  document.getElementById('pay-gopay').checked=pay.methods?.gopay??cfg.methods_gopay??true;
+  document.getElementById('pay-ovo').checked=pay.methods?.ovo??cfg.methods_ovo??true;
+  document.getElementById('pay-seabank').checked=pay.methods?.seabank??cfg.methods_seabank??true;
+  const q=pay.qrCode||cfg.qr_code||'';if(q){document.getElementById('qrbig').src=q;document.getElementById('qrwrap').style.display='block';document.getElementById('qrimg').src=q;}
+  document.getElementById('payname2').textContent=pay.accountName||cfg.account_name||'—';
+  document.getElementById('paynum2').textContent=pay.accountNumber||cfg.account_number||'—';
+}
+function prevQR(){const u=document.getElementById('pay-qr').value.trim();if(u){document.getElementById('qrbig').src=u;document.getElementById('qrwrap').style.display='block';document.getElementById('qrimg').src=u;document.getElementById('payname2').textContent=document.getElementById('pay-name').value||'—';document.getElementById('paynum2').textContent=document.getElementById('pay-num').value||'—';}}
+async function savePay(){
+  const num=document.getElementById('pay-num').value.trim(),name=document.getElementById('pay-name').value.trim(),qr=document.getElementById('pay-qr').value.trim(),dana=document.getElementById('pay-dana').checked,gopay=document.getElementById('pay-gopay').checked,ovo=document.getElementById('pay-ovo').checked,seabank=document.getElementById('pay-seabank').checked;
+  if(!_K.config)_K.config={};_K.config.account_number=num;_K.config.account_name=name;_K.config.qr_code=qr;_K.config.methods_dana=dana;_K.config.methods_gopay=gopay;_K.config.methods_ovo=ovo;_K.config.methods_seabank=seabank;
+  document.getElementById('payname2').textContent=name||'—';document.getElementById('paynum2').textContent=num||'—';
+  try{await fbS('konten/config',_K.config);toast('Pembayaran disimpan ✅','success');}catch(e){toast('Gagal: '+e.message,'error');}
+}
+
+// ════════════════════════════════════════════════════════
+//  CHAT
+// ════════════════════════════════════════════════════════
+let _lastChatCount = 0;
+async function loadChat(){
+  try{
+    const d = await fbG('chat');
+    const newCH = d||{};
+    _lastChatCount = Object.keys(newCH).length;
+    _CH = newCH;
+    const nb=document.getElementById('nb-c');
+    if(nb) nb.textContent=Object.keys(_CH).length;
+    updBadge(); renderC();
+  }catch(e){toast('Gagal load chat','error');}
+}
+
+async function delMsg(k){try{await fbD('chat/'+k);delete _CH[k];const nb=document.getElementById('nb-c');if(nb)nb.textContent=Object.keys(_CH).length;updBadge();renderC();toast('Pesan dihapus','info');}catch(e){toast('Gagal: '+e.message,'error');}}
+
+// ════════════════════════════════════════════════════════
+//  LOGS
+// ════════════════════════════════════════════════════════
+async function loadLogs(){
+  try{const d=await fbG('adminLogs');_LG=d||{};rndLogs();}catch(e){toast('Gagal load logs','error');}
+}
+function rndLogs(){
+  const ent=Object.entries(_LG).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0)).slice(0,200);
+  const tb=document.getElementById('ltb');
+  if(!ent.length){tb.innerHTML='<tr><td colspan="7"><div class="es"><i class="fa fa-scroll"></i>Belum ada log</div></td></tr>';return;}
+  tb.innerHTML=ent.map(([k,v])=>{const diff=(v.newVal||0)-(v.oldVal||0);const ts=v.ts?new Date(v.ts).toLocaleString('id-ID'):'—';
+  return`<tr><td><b>${esc(v.member||'?')}</b></td><td style="font-family:'Share Tech Mono'">${v.oldVal??'?'}</td><td style="font-family:'Share Tech Mono'">${v.newVal??'?'}</td><td style="font-family:'Share Tech Mono';color:${diff>=0?'var(--green)':'var(--red)'}">${diff>=0?'+':''}${diff}</td><td style="color:var(--accent)">${esc(v.admin||'?')}</td><td style="font-size:11px;color:var(--text2)">${esc(v.reason||'—')}</td><td style="font-size:10px;color:var(--muted)">${ts}</td></tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════════
+//  SETTINGS
+// ════════════════════════════════════════════════════════
+function rndSett(){const cfg={...DEFAULT_CONFIG,...(_K.config||{})};document.getElementById('cfg-nm').value=cfg.store_name||'Zarr Marketplace';document.getElementById('cfg-wa2').value=cfg.wa_number||'6281317205434';document.getElementById('cfg-acp').value=cfg.accent_color||'#00eaff';document.getElementById('cfg-ach').value=cfg.accent_color||'#00eaff';}
+function syncAcc(){const h=document.getElementById('cfg-ach').value;if(/^#[0-9A-Fa-f]{6}$/.test(h))document.getElementById('cfg-acp').value=h;}
+async function saveSett(){const nm=document.getElementById('cfg-nm').value.trim(),wa=document.getElementById('cfg-wa2').value.trim(),ac=document.getElementById('cfg-acp').value;if(!_K.config)_K.config={};_K.config.store_name=nm;_K.config.wa_number=wa;_K.config.accent_color=ac;try{await fbS('konten/config',_K.config);toast('Pengaturan toko disimpan ✅','success');}catch(e){toast('Gagal: '+e.message,'error');}}
+
+// ════════════════════════════════════════════════════════
+//  PUBLISH ALL
+// ════════════════════════════════════════════════════════
+async function publishAll(){
+  try{
+    const prices=gPr(),bns=gBn();
+    await Promise.all([fbS('konten/prices',prices),fbS('konten/banners',bns),fbS('konten/gacha',_G),_K.config?fbS('konten/config',_K.config):Promise.resolve()]);
+    toast('Semua konten di-publish ✅ Langsung tampil di store publik!','success');
+  }catch(e){toast('Gagal publish: '+e.message,'error');}
+}
+
+// ════════════════════════════════════════════════════════
+//  EXPORT JSON
+// ════════════════════════════════════════════════════════
+function exportJSON(){const d={members:_M,konten:_K,vouchers:_V,gacha:_G,leaderboard:_LB};const bl=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(bl);const a=document.createElement('a');a.href=u;a.download='uno-storezz-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);toast('Export berhasil ✅','success');}
+
+// ════════════════════════════════════════════════════════
+//  DELETE ALL
+// ════════════════════════════════════════════════════════
+function confDelAll(t){
+  if(t==='chat'){conf2('Hapus <b>SEMUA</b> chat?',async()=>{try{await fbD('chat');_CH={};const nb=document.getElementById('nb-c');if(nb)nb.textContent=0;updBadge();renderC();toast('Semua chat dihapus','info');}catch(e){toast('Gagal','error');}});}
+  else if(t==='gacha'){conf2('Hapus <b>SEMUA</b> hadiah gacha?',async()=>{_G=[];try{await fbS('konten/gacha',[]);rndG();updBadge();toast('Semua gacha dihapus','info');}catch(e){toast('Gagal','error');}});}
+}
+
+// ════════════════════════════════════════════════════════
+//  AUTO-LOGIN + INIT LISTENERS
+// ════════════════════════════════════════════════════════
+window.addEventListener('load',()=>{
+  if(sessionStorage.getItem('ua')==='1'){
+    document.getElementById('ls').style.display='none';
+    document.getElementById('app').classList.add('show');
+    init();
+  }
+  // Update member select whenever modal opens
+  document.getElementById('mAS').addEventListener('click',function(e){
+    if(e.target===this||this.classList.contains('open')) updateMemberSelect();
+  });
+});
+// Expose window functions — semua function perlu diakses dari HTML inline onclick
+// ════════════════════════════════════════════════════════
+//  KOIN PAGE — FULL FEATURED
+// ════════════════════════════════════════════════════════
+let _ekKey = null, _ekCurrent = 0;
+
+function rndCoinPage(){
+  rndCoinStats();
+  rndCoinTable();
+  rndCoinLog();
+  updCoinMemberSelect();
+}
+
+function rndCoinStats(){
+  const ma = Object.values(_M);
+  const total = ma.reduce((s,m)=>(s+(m.coins||0)),0);
+  const active = ma.filter(m=>(m.coins||0)>0).length;
+  const avg = ma.length ? Math.round(total/ma.length) : 0;
+  const top = ma.sort((a,b)=>(b.coins||0)-(a.coins||0))[0];
+  document.getElementById('coin-stat-total').textContent = fmt(total);
+  document.getElementById('coin-stat-active').textContent = active;
+  document.getElementById('coin-stat-avg').textContent = fmt(avg);
+  document.getElementById('coin-stat-max').textContent = fmt(top?.coins||0);
+  document.getElementById('coin-stat-max-who').textContent = top?.name||'—';
+  // Update nav badge
+  const nb = document.getElementById('nb-coins-total');
+  if(nb) nb.textContent = fmt(total);
+}
+
+function rndCoinTable(){
+  const q = (document.getElementById('coin-srch')?.value||'').toLowerCase();
+  const arr = Object.entries(_M).map(([k,v])=>({...v,_k:k}))
+    .filter(m=>!q||(m.name||'').toLowerCase().includes(q))
+    .sort((a,b)=>(b.coins||0)-(a.coins||0));
+  const tb = document.getElementById('coin-tbl');
+  const cnt = document.getElementById('coin-tbl-cnt');
+  if(cnt) cnt.textContent = arr.length + ' member';
+  if(!arr.length){
+    tb.innerHTML='<tr><td colspan="7"><div class="es"><i class="fa fa-coins"></i>Tidak ada member</div></td></tr>';
+    return;
+  }
+  tb.innerHTML = arr.map((m,i)=>{
+    const l = lv(m.coins||0);
+    const as = (m.subs||[]).filter(s=>isAct(s)).length;
+    const coinBar = Math.min(100, Math.round((m.coins||0)/20));
+    return `<tr>
+      <td style="color:var(--muted);font-size:11px">${i+1}</td>
+      <td><b>${esc(m.name||'?')}</b>${m.julukan?` <span style="color:var(--purple);font-size:10px">(${esc(m.julukan)})</span>`:''}</td>
+      <td style="color:${l.color};font-size:11px">${l.emoji} ${l.name}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'Share Tech Mono';font-weight:700;color:var(--gold);font-size:13px">🪙 ${fmt(m.coins)}</span>
+          <div style="flex:1;min-width:60px;height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;">
+            <div style="width:${coinBar}%;height:100%;background:linear-gradient(90deg,var(--gold),#ff8800);border-radius:4px;"></div>
+          </div>
+        </div>
+      </td>
+      <td style="font-family:'Share Tech Mono';font-size:11px;color:var(--muted)">Rp ${fmt(m.totalSpent||0)}</td>
+      <td><span class="bge ${as>0?'bgr':'bm'}">${as} aktif</span></td>
+      <td>
+        <div style="display:flex;gap:4px;">
+          <button class="btn bw bxs" onclick="openEK('${esc(m._k)}')" title="Edit koin"><i class="fa fa-pen"></i> Edit</button>
+          <button class="btn bgr bxs" onclick="quickAddCoin('${esc(m._k)}',50)" title="+50 koin" style="background:rgba(0,255,136,0.1);border-color:rgba(0,255,136,0.3);color:var(--green)">+50</button>
+          <button class="btn bd bxs" onclick="quickAddCoin('${esc(m._k)}',-50)" title="-50 koin">-50</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function rndCoinLog(){
+  const tb = document.getElementById('coin-log-tbl');
+  if(!tb) return;
+  const ent = Object.entries(_LG||{}).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0)).slice(0,15);
+  if(!ent.length){
+    tb.innerHTML='<tr><td colspan="6"><div class="es"><i class="fa fa-clock-rotate-left"></i>Belum ada log koin</div></td></tr>';
+    return;
+  }
+  tb.innerHTML = ent.map(([k,v])=>{
+    const diff=(v.newVal||0)-(v.oldVal||0);
+    const ts=v.ts?new Date(v.ts).toLocaleString('id-ID'):'—';
+    return`<tr>
+      <td><b>${esc(v.member||'?')}</b></td>
+      <td style="font-family:'Share Tech Mono'">${v.oldVal??'?'}</td>
+      <td style="font-family:'Share Tech Mono'">${v.newVal??'?'}</td>
+      <td style="font-family:'Share Tech Mono';font-weight:700;color:${diff>=0?'var(--green)':'var(--red)'}">${diff>=0?'+':''}${diff}</td>
+      <td style="font-size:11px;color:var(--text2)">${esc(v.reason||v.admin||'—')}</td>
+      <td style="font-size:10px;color:var(--muted)">${ts}</td>
+    </tr>`;
+  }).join('');
+}
+
+function updCoinMemberSelect(){
+  const sel = document.getElementById('qa-mem');
+  if(!sel) return;
+  sel.innerHTML = Object.values(_M).sort((a,b)=>(a.name||'').localeCompare(b.name||'')).map(m=>`<option value="${esc(m.name)}">${esc(m.name)} — 🪙${fmt(m.coins||0)}</option>`).join('');
+}
+
+// Quick +/- buttons in table row
+async function quickAddCoin(key, delta){
+  const m = _M[key];
+  if(!m) return;
+  const oldVal = m.coins||0;
+  const newVal = Math.max(0, oldVal+delta);
+  const reason = delta>0 ? 'Quick +'+delta+' (admin)' : 'Quick '+delta+' (admin)';
+  await _saveCoinChange(key, oldVal, newVal, reason);
+}
+window.quickAddCoin = quickAddCoin;
+
+// Open edit coin modal
+function openEK(key){
+  const m = _M[key];
+  if(!m) return;
+  _ekKey = key; _ekCurrent = m.coins||0;
+  document.getElementById('ek-name').textContent = m.name||key;
+  document.getElementById('ek-current').textContent = fmt(_ekCurrent);
+  document.getElementById('ek-amount').value = '';
+  document.getElementById('ek-reason').value = '';
+  document.getElementById('ek-preview').textContent = '—';
+  document.getElementById('ek-op').value = 'set';
+  openM('mEK');
+}
+window.openEK = openEK;
+
+function previewCoinResult(){
+  const op = document.getElementById('ek-op').value;
+  const amt = parseInt(document.getElementById('ek-amount').value)||0;
+  let result;
+  if(op==='set') result = amt;
+  else if(op==='add') result = _ekCurrent + amt;
+  else result = Math.max(0, _ekCurrent - amt);
+  document.getElementById('ek-preview').textContent = fmt(_ekCurrent)+' → '+fmt(result)+' koin';
+}
+window.previewCoinResult = previewCoinResult;
+
+async function saveEK(){
+  if(!_ekKey) return;
+  const op = document.getElementById('ek-op').value;
+  const amt = parseInt(document.getElementById('ek-amount').value)||0;
+  const reason = document.getElementById('ek-reason').value.trim();
+  if(!reason){ toast('Wajib isi alasan!','error'); return; }
+  let newVal;
+  if(op==='set') newVal = amt;
+  else if(op==='add') newVal = _ekCurrent + amt;
+  else newVal = Math.max(0, _ekCurrent - amt);
+  await _saveCoinChange(_ekKey, _ekCurrent, newVal, reason);
+  closeM('mEK');
+}
+window.saveEK = saveEK;
+
+async function applyQuickCoin(){
+  const mname = document.getElementById('qa-mem').value;
+  const op    = document.getElementById('qa-op').value;
+  const amt   = parseInt(document.getElementById('qa-amount').value)||0;
+  const reason= document.getElementById('qa-reason').value.trim();
+  if(!amt){ toast('Isi jumlah koin!','error'); return; }
+  if(!reason){ toast('Isi alasan/keterangan!','error'); return; }
+  const key = mname.replace(/[.#$\[\]]/g,'_');
+  const m = _M[key]||_M[mname];
+  if(!m){ toast('Member tidak ditemukan!','error'); return; }
+  const mk = m.name.replace(/[.#$\[\]]/g,'_');
+  const oldVal = m.coins||0;
+  let newVal;
+  if(op==='set') newVal = amt;
+  else if(op==='add') newVal = oldVal + amt;
+  else newVal = Math.max(0, oldVal - amt);
+  await _saveCoinChange(mk, oldVal, newVal, reason);
+  document.getElementById('qa-amount').value = '';
+  document.getElementById('qa-reason').value = '';
+}
+window.applyQuickCoin = applyQuickCoin;
+
+// Core function — ubah koin + simpan ke Firebase + catat log
+async function _saveCoinChange(key, oldVal, newVal, reason){
+  if(!_M[key]) return;
+  _M[key].coins = newVal;
+  const logEntry = {
+    member: _M[key].name||key, oldVal, newVal, reason,
+    admin: 'admin', ts: Date.now()
+  };
+  try{
+    await fbP('members/'+key, { coins: newVal });
+    // Catat log ke Firebase
+    const logKey = 'coinEdit_'+key+'_'+Date.now();
+    await fbS('adminLogs/'+logKey, logEntry);
+    // Update leaderboard
+    const l = lv(newVal);
+    await fbS('leaderboard/'+key, { name:_M[key].name||key, coins:newVal, level:l.name, ts:Date.now() });
+    // Simpan log lokal
+    if(!_LG) _LG = {};
+    _LG[logKey] = logEntry;
+    toast(_M[key].name+': koin '+fmt(oldVal)+' → '+fmt(newVal)+' 🪙','success');
+    updHdr(); updBadge(); rndCoinStats(); rndCoinTable(); rndCoinLog(); updCoinMemberSelect();
+    if(_cp==='members') renderM();
+    if(_cp==='lb') rndLB();
+    if(_cp==='overview') rndOV();
+  }catch(e){
+    _M[key].coins = oldVal; // rollback
+    toast('Gagal: '+e.message,'error');
+  }
+}
+
+window.saveEM=saveEM;window.resetDevM=resetDevM;window.saveNewSub=saveNewSub;window.delSub=delSub;
+window.openEditProd=openEditProd;window.openAddProd=openAddProd;window.saveNewProd=saveNewProd;
+window.delProd=delProd;window.prevApImg=prevApImg;window.rndP=rndP;window.renderCatSel=renderCatSel;window.renderProdTable=renderProdTable;window.mvProd=window.mvProd;window.switchCat=window.switchCat;window.toggleCatAddForm=window.toggleCatAddForm;window.deleteCatInline=window.deleteCatInline;
+window.addBanner=addBanner;window.delBn=delBn;
+window.prevBn=prevBn;window.saveNewCat=saveNewCat;window.mvCat=mvCat;window.saveMenuOrd=saveMenuOrd;
+window.delCat=delCat;window.saveNewCatFromCatsPage=window.saveNewCatFromCatsPage;window.saveMedia=saveMedia;window.prevVid=prevVid;window.prevMus=prevMus;
+window.saveNewVoucher=saveNewVoucher;window.delV=delV;window.saveNewGacha=saveNewGacha;
+window.mvG=mvG;window.delG=delG;window.openAddGacha=window.openAddGacha;window.openEditGacha=window.openEditGacha;window.saveRdFb=saveRdFb;window.openAddRdItem=window.openAddRdItem;window.openEditRdItem=window.openEditRdItem;window.saveRdItem=window.saveRdItem;window.delRdItem=window.delRdItem;window.savePay=savePay;window.prevQR=prevQR;
+window.delMsg=delMsg;window.openEM2=openEM2;window.delM=delM;window.goto=goto;
+window.refreshAll=refreshAll;window.publishAll=publishAll;window.exportJSON=exportJSON;
+window.confDelAll=confDelAll;window.saveSett=saveSett;window.syncAcc=syncAcc;window.rndLB=rndLB;
+window.rndCur=rndCur;window.loadAll=loadAll;window.loadChat=loadChat;window.loadLogs=loadLogs;
+window.openEK=openEK;window.saveEK=saveEK;window.previewCoinResult=previewCoinResult;window.applyQuickCoin=applyQuickCoin;window.quickAddCoin=quickAddCoin;
+</script>
+</body>
+</html>
